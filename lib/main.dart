@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
                 Text("Output is:"),
                 ElevatedButton(
                   onPressed: () async {
-                    var response = await Gemini().getCoordinates("pune");
+                    var response = await Gemini().getStory("pune");
 
                     setState(() {
                       data = response;

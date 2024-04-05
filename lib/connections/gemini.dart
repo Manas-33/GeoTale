@@ -6,10 +6,10 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 class Gemini {
   final _apiKey = dotenv.env['API_KEY']!;
 
-  getCoordinates(String cityname) async {
+  getCoordinates(String cityName) async {
     final model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
     final prompt = """
-return a list of coordinates of some poi's of the given city : $cityname
+return a list of coordinates of some poi's of the given city : $cityName
 exclude any other details. the format should be in json in this format only 
 IMPORTNANT RULE : 	dont add "```json"or "json" or "```" :
 
@@ -38,6 +38,18 @@ IMPORTNANT RULE : 	dont add "```json"or "json" or "```" :
     locations.forEach((location) {
       print(location['name']);
     });
+    return response.text!;
+  }
+
+  getStory(String cityName)async{
+    final model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
+    final prompt = """
+Create an description of this given city: $cityName, in 100 words in simple language
+""";
+    final content = [Content.text(prompt)];
+    final response = await model.generateContent(content,
+        generationConfig: GenerationConfig(maxOutputTokens: 8192));
+    print(response.text!);
     return response.text!;
   }
 }
