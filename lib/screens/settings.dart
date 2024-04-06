@@ -1,10 +1,12 @@
 import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/connections/lg.dart' as Lg;
 import 'package:ai_app/connections/lg.dart';
+import 'package:ai_app/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toasty_box/toast_enums.dart';
 import 'package:toasty_box/toast_service.dart';
+import 'package:vitality/vitality.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -87,9 +89,9 @@ class _SettingsPageState extends State<SettingsPage> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.indigo[900],
+        backgroundColor: backgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.indigo[900],
+          backgroundColor: backgroundColor,
           title: const Text('Connection Settings'),
         ),
         body: SingleChildScrollView(
