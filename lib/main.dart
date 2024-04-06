@@ -1,4 +1,6 @@
 import 'package:ai_app/connections/gemini.dart';
+import 'package:ai_app/screens/home_screen.dart';
+import 'package:ai_app/screens/settings.dart';
 import 'package:ai_app/screens/voice_demo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +14,7 @@ Future<void> main() async {
     DeviceOrientation.landscapeRight,
     DeviceOrientation.landscapeLeft,
   ]).then((_) {
-    runApp( MaterialApp(home: MyApp()));
+    runApp(MaterialApp(home: SettingsPage()));
   });
 }
 
@@ -45,7 +47,7 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                 onPressed: () async {
                   var response = await Gemini().getStory("pune");
-    
+
                   setState(() {
                     data = response;
                     completed = true;
