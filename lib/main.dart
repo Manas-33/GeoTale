@@ -29,7 +29,7 @@ Future<void> main() async {
         child: MaterialApp(
             home: AnimatedSplashScreen(
           backgroundColor: backgroundColor,
-          nextScreen: CityInformation(),
+          nextScreen: SettingsPage(),
           splash: Stack(children: [
             Expanded(
               child: Vitality.randomly(

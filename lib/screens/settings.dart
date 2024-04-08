@@ -2,7 +2,9 @@ import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/connections/lg.dart' as Lg;
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
+import 'package:ai_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toasty_box/toast_enums.dart';
 import 'package:toasty_box/toast_service.dart';
@@ -81,29 +83,80 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context, connectionStatus);
         return true;
       },
       child: Scaffold(
+        endDrawer: AppDrawer(size: size),
         backgroundColor: backgroundColor,
-        appBar: AppBar(
-          backgroundColor: backgroundColor,
-          title: const Text('Connection Settings'),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(125.0),
+          child: Container(
+            child: AppBar(
+                backgroundColor: backgroundColor,
+                toolbarHeight: 150,
+                elevation: 0,
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 60.h,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: 30,
+                            ),
+                            Container(
+                              child: Image.asset(
+                                'assets/images/logo.png',
+                                scale: 4.5.h,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          child: ConnectionFlag(
+                            status: connectionStatus,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        _scaffoldKey.currentState!.openEndDrawer();
+                      },
+                      icon: Container(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 45, 0),
+                        child: Icon(
+                          Icons.menu,
+                          color: Colors.white,
+                          size: 35.sp,
+                        ),
+                      ))
+                ]),
+          ),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: ConnectionFlag(
-                    status: connectionStatus,
-                  )),
               TextField(
                 controller: _ipController,
                 decoration: const InputDecoration(
