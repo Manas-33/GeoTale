@@ -74,7 +74,7 @@ Future<void> main() async {
               ),
             ),
           ]),
-          duration: 1700,
+          duration: 1,
           splashTransition: SplashTransition.scaleTransition,
         ))));
   });
