@@ -3,6 +3,7 @@ import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
 import 'package:ai_app/connections/lg.dart' as Lg;
+import 'package:ai_app/screens/info_screen.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,35 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var size = MediaQuery.of(context).size;
     return Scaffold(
         key: _scaffoldKey,
-        endDrawer: Drawer(
-          width: size.width * .35,
-          backgroundColor: secondColor,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: secondColor,
-                ),
-                child: Text(
-                  'Drawer Header',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.person),
-                title: Text('Hello'),
-                onTap: () {
-                  print('Clicked Hello');
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-            ],
-          ),
-        ),
+        endDrawer: AppDrawer(size: size),
         backgroundColor: backgroundColor,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(125.0),
@@ -141,39 +114,39 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // SizedBox(
-                //   height: 90.h,
-                // ),
-                // Container(
-                //   alignment: Alignment.centerLeft,
-                //   padding: EdgeInsets.fromLTRB(27, 0, 0, 0),
-                //   child: DefaultTextStyle(
-                //     style: GoogleFonts.openSans(
-                //       textStyle: TextStyle(
-                //         foreground: Paint()
-                //           ..shader = LinearGradient(
-                //             colors: <Color>[
-                //               const Color.fromARGB(255, 66, 160, 237),
-                //               const Color.fromARGB(255, 106, 225, 110)
-                //             ],
-                //           ).createShader(Rect.fromLTWH(0.0, 0.0, 800.0, 70.0)),
-                //         fontSize: 55.sp,
-                //         fontWeight: FontWeight.w600,
-                //       ),
-                //     ),
-                //     child: AnimatedTextKit(
-                //       pause: Duration(milliseconds: 2000),
-                //       repeatForever: true,
-                //       animatedTexts: [
-                //         TypewriterAnimatedText('Enter the name of the city',
-                //             speed: Duration(milliseconds: 60)),
-                //       ],
-                //       onTap: () {
-                //         print("Tap Event");
-                //       },
-                //     ),
-                //   ),
-                // ),
+                SizedBox(
+                  height: 90.h,
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.fromLTRB(27, 0, 0, 0),
+                  child: DefaultTextStyle(
+                    style: GoogleFonts.openSans(
+                      textStyle: TextStyle(
+                        foreground: Paint()
+                          ..shader = LinearGradient(
+                            colors: <Color>[
+                              const Color.fromARGB(255, 66, 160, 237),
+                              const Color.fromARGB(255, 106, 225, 110)
+                            ],
+                          ).createShader(Rect.fromLTWH(0.0, 0.0, 800.0, 70.0)),
+                        fontSize: 55.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    child: AnimatedTextKit(
+                      pause: Duration(milliseconds: 2000),
+                      repeatForever: true,
+                      animatedTexts: [
+                        TypewriterAnimatedText('Discover the city through AI',
+                            speed: Duration(milliseconds: 60)),
+                      ],
+                      onTap: () {
+                        print("Tap Event");
+                      },
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 60.h,
                 ),
@@ -218,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            hintText: "City name here",
+                            hintText: "Enter name of the city",
                             prefixIcon: Container(
                                 margin:
                                     EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 14.h),
@@ -293,9 +266,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ElevatedButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                              MaterialStateProperty.all<Color>(secondColor),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => CityInformation(),
+                          ));
+                        },
                         child: Container(
                           // color: Colors.blue,
                           alignment: Alignment.center,
@@ -337,5 +314,171 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ));
+  }
+}
+
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({
+    super.key,
+    required this.size,
+  });
+
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      width: size.width * .35,
+      backgroundColor: secondColor,
+      child: ListView(
+        children: [
+          SizedBox(
+            height: 60.h,
+          ),
+          Column(
+            children: [
+              Image.asset(
+                "assets/images/logoplain.png",
+                scale: 4,
+              ),
+              SizedBox(
+                height: 15.h,
+              ),
+              Image.asset(
+                "assets/images/logo2.png",
+                scale: 4,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 80.h,
+          ),
+          ListTile(
+            title: Container(
+              padding: EdgeInsets.only(left: 80),
+              child: Row(
+                children: [
+                  Image.asset(
+                    "assets/images/home.png",
+                    // color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Text(
+                    'Home',
+                    style:
+                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              print('Clicked Hello');
+              Navigator.pop(context);
+            },
+          ),
+          Divider(
+            color: Colors.white.withOpacity(0.5),
+            indent: 50,
+            thickness: 0.5,
+            endIndent: 50,
+          ),
+          ListTile(
+            title: Container(
+              padding: EdgeInsets.only(left: 80),
+              child: Row(
+                children: [
+                  Image.asset(
+                    "assets/images/tasks.png",
+                    // color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Text(
+                    'Liquid Galaxy Tasks',
+                    style:
+                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              print('Clicked Hello');
+              Navigator.pop(context);
+            },
+          ),
+          Divider(
+            color: Colors.white.withOpacity(0.5),
+            indent: 50,
+            thickness: 0.5,
+            endIndent: 50,
+          ),
+          ListTile(
+            title: Container(
+              padding: EdgeInsets.only(left: 80),
+              child: Row(
+                children: [
+                  Image.asset(
+                    "assets/images/connection.png",
+                    // color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Text(
+                    'Connection Manager',
+                    style:
+                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              print('Clicked Hello');
+              Navigator.pop(context);
+            },
+          ),
+          Divider(
+            color: Colors.white.withOpacity(0.5),
+            indent: 50,
+            thickness: 0.5,
+            endIndent: 50,
+          ),
+          ListTile(
+            title: Container(
+              padding: EdgeInsets.only(left: 80),
+              child: Row(
+                children: [
+                  Image.asset(
+                    "assets/images/about.png",
+                    // color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Text(
+                    'About',
+                    style:
+                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              print('Clicked Hello');
+              Navigator.pop(context);
+            },
+          ),
+          Divider(
+            color: Colors.white.withOpacity(0.5),
+            indent: 50,
+            thickness: 0.5,
+            endIndent: 50,
+          ),
+        ],
+      ),
+    );
   }
 }

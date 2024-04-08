@@ -3,7 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final backgroundColor = Color.fromARGB(255, 2, 17, 68);
-final secondColor = Color.fromARGB(255, 41, 151, 210);
+final secondColor = const Color.fromARGB(255, 37, 78, 185);
+// final secondColor = Color.fromARGB(255, 41, 210, 210);
 TextStyle googleTextStyle(
     double customFontSize, FontWeight fontWeight, Color color) {
   return GoogleFonts.openSans(

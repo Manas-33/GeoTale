@@ -1,6 +1,7 @@
 import 'package:ai_app/connections/gemini.dart';
 import 'package:ai_app/constants.dart';
 import 'package:ai_app/screens/home_screen.dart';
+import 'package:ai_app/screens/info_screen.dart';
 import 'package:ai_app/screens/settings.dart';
 import 'package:ai_app/screens/voice_demo.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
@@ -28,7 +29,7 @@ Future<void> main() async {
         child: MaterialApp(
             home: AnimatedSplashScreen(
           backgroundColor: backgroundColor,
-          nextScreen: HomeScreen(),
+          nextScreen: CityInformation(),
           splash: Stack(children: [
             Expanded(
               child: Vitality.randomly(
