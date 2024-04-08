@@ -111,7 +111,6 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                 onPressed: () async {
                   var response = await Gemini().getStory("pune");
-
                   setState(() {
                     data = response;
                     completed = true;
