@@ -1,9 +1,11 @@
 import 'package:ai_app/components/cities.dart';
 import 'package:ai_app/components/connection_flag.dart';
+import 'package:ai_app/components/drawer.dart';
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
 import 'package:ai_app/connections/lg.dart' as Lg;
 import 'package:ai_app/screens/info_screen.dart';
+import 'package:ai_app/screens/settings.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toasty_box/toast_enums.dart';
+import 'package:toasty_box/toast_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         endDrawer: AppDrawer(size: size),
         backgroundColor: backgroundColor,
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(125.0),
+          preferredSize: const Size.fromHeight(135.0),
           child: Container(
             child: AppBar(
                 backgroundColor: backgroundColor,
@@ -94,6 +98,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 actions: [
                   IconButton(
+                    icon: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: secondColor),
+                        child: Image.asset(
+                          "assets/images/connection.png",
+                          color: Colors.white,
+                        )),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SettingsPage(),
+                      ));
+                    },
+                  ),
+                  SizedBox(
+                    width: 30.h,
+                  ),
+                  IconButton(
                       onPressed: () {
                         _scaffoldKey.currentState!.openEndDrawer();
                       },
@@ -115,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 90.h,
+                  height: 70.h,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -154,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
-                      width: size.width * .6,
+                      width: size.width * .8,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -225,7 +249,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                           if (isCity) {
                             print("It is a city");
+                            print("placeDetails 2nd ${prediction.description}");
+                            String cityName =
+                                prediction.description!.split(',')[0].trim();
+                            print("City Name: $cityName");
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => CityInformation(
+                                cityName: cityName,
+                                cityLat: double.parse(prediction.lat!),
+                                cityLong: double.parse(prediction.lng!),
+                              ),
+                            ));
                           } else {
+                            ToastService.showErrorToast(
+                              context,
+                              length: ToastLength.medium,
+                              expandedHeight: 100,
+                              message: "It is not a city, try again!",
+                            );
                             print("It is not a city, try again later");
                           }
                           setState(() {
@@ -263,32 +304,32 @@ class _HomeScreenState extends State<HomeScreen> {
                         isCrossBtnShown: true,
                       ),
                     ),
-                    ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(secondColor),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => CityInformation(),
-                          ));
-                        },
-                        child: Container(
-                          // color: Colors.blue,
-                          alignment: Alignment.center,
-                          width: size.width * .1,
-                          height: size.height * 0.07,
-                          child: Text(
-                            "Generate",
-                            style: GoogleFonts.openSans(
-                              textStyle: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        )),
+                    // ElevatedButton(
+                    //     style: ButtonStyle(
+                    //       backgroundColor:
+                    //           MaterialStateProperty.all<Color>(secondColor),
+                    //     ),
+                    //     onPressed: () {
+                    //       Navigator.of(context).push(MaterialPageRoute(
+                    //         builder: (context) => CityInformation(),
+                    //       ));
+                    //     },
+                    //     child: Container(
+                    //       // color: Colors.blue,
+                    //       alignment: Alignment.center,
+                    //       width: size.width * .1,
+                    //       height: size.height * 0.07,
+                    //       child: Text(
+                    //         "Generate",
+                    //         style: GoogleFonts.openSans(
+                    //           textStyle: TextStyle(
+                    //             color: Colors.white,
+                    //             fontSize: 18.sp,
+                    //             fontWeight: FontWeight.w600,
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     )),
                   ],
                 ),
                 SizedBox(
@@ -314,171 +355,5 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ));
-  }
-}
-
-class AppDrawer extends StatelessWidget {
-  const AppDrawer({
-    super.key,
-    required this.size,
-  });
-
-  final Size size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      width: size.width * .35,
-      backgroundColor: secondColor,
-      child: ListView(
-        children: [
-          SizedBox(
-            height: 60.h,
-          ),
-          Column(
-            children: [
-              Image.asset(
-                "assets/images/logoplain.png",
-                scale: 4,
-              ),
-              SizedBox(
-                height: 15.h,
-              ),
-              Image.asset(
-                "assets/images/logo2.png",
-                scale: 4,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 80.h,
-          ),
-          ListTile(
-            title: Container(
-              padding: EdgeInsets.only(left: 80),
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/images/home.png",
-                    // color: Colors.white,
-                  ),
-                  SizedBox(
-                    width: 20.w,
-                  ),
-                  Text(
-                    'Home',
-                    style:
-                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            onTap: () {
-              print('Clicked Hello');
-              Navigator.pop(context);
-            },
-          ),
-          Divider(
-            color: Colors.white.withOpacity(0.5),
-            indent: 50,
-            thickness: 0.5,
-            endIndent: 50,
-          ),
-          ListTile(
-            title: Container(
-              padding: EdgeInsets.only(left: 80),
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/images/tasks.png",
-                    // color: Colors.white,
-                  ),
-                  SizedBox(
-                    width: 20.w,
-                  ),
-                  Text(
-                    'Liquid Galaxy Tasks',
-                    style:
-                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            onTap: () {
-              print('Clicked Hello');
-              Navigator.pop(context);
-            },
-          ),
-          Divider(
-            color: Colors.white.withOpacity(0.5),
-            indent: 50,
-            thickness: 0.5,
-            endIndent: 50,
-          ),
-          ListTile(
-            title: Container(
-              padding: EdgeInsets.only(left: 80),
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/images/connection.png",
-                    // color: Colors.white,
-                  ),
-                  SizedBox(
-                    width: 20.w,
-                  ),
-                  Text(
-                    'Connection Manager',
-                    style:
-                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            onTap: () {
-              print('Clicked Hello');
-              Navigator.pop(context);
-            },
-          ),
-          Divider(
-            color: Colors.white.withOpacity(0.5),
-            indent: 50,
-            thickness: 0.5,
-            endIndent: 50,
-          ),
-          ListTile(
-            title: Container(
-              padding: EdgeInsets.only(left: 80),
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/images/about.png",
-                    // color: Colors.white,
-                  ),
-                  SizedBox(
-                    width: 20.w,
-                  ),
-                  Text(
-                    'About',
-                    style:
-                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            onTap: () {
-              print('Clicked Hello');
-              Navigator.pop(context);
-            },
-          ),
-          Divider(
-            color: Colors.white.withOpacity(0.5),
-            indent: 50,
-            thickness: 0.5,
-            endIndent: 50,
-          ),
-        ],
-      ),
-    );
   }
 }

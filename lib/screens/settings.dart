@@ -1,4 +1,5 @@
 import 'package:ai_app/components/connection_flag.dart';
+import 'package:ai_app/components/drawer.dart';
 import 'package:ai_app/connections/lg.dart' as Lg;
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
@@ -83,10 +84,9 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   Widget build(BuildContext context) {
+    final _scaffoldKey = GlobalKey<ScaffoldState>();
     var size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
@@ -100,6 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
           preferredSize: const Size.fromHeight(125.0),
           child: Container(
             child: AppBar(
+                automaticallyImplyLeading: false,
                 backgroundColor: backgroundColor,
                 toolbarHeight: 150,
                 elevation: 0,

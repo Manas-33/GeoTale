@@ -41,10 +41,10 @@ IMPORTNANT RULE : 	dont add "```json"or "json" or "```" :
     return response.text!;
   }
 
-  getStory(String cityName)async{
+  getStory(String cityName, String descriptions) async {
     final model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
     final prompt = """
-Create an description of this given city: $cityName, in 100 words in simple language
+Create an $descriptions description of this given city: $cityName, in 100 words in simple language
 """;
     final content = [Content.text(prompt)];
     final response = await model.generateContent(content,

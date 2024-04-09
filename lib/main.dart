@@ -29,7 +29,7 @@ Future<void> main() async {
         child: MaterialApp(
             home: AnimatedSplashScreen(
           backgroundColor: backgroundColor,
-          nextScreen: SettingsPage(),
+          nextScreen: HomeScreen(),
           splash: Stack(children: [
             Expanded(
               child: Vitality.randomly(
@@ -111,7 +111,7 @@ class _MyAppState extends State<MyApp> {
               Text("Output is:"),
               ElevatedButton(
                 onPressed: () async {
-                  var response = await Gemini().getStory("pune");
+                  var response = await Gemini().getStory("pune", "historic");
                   setState(() {
                     data = response;
                     completed = true;
