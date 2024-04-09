@@ -7,17 +7,12 @@ import 'package:ai_app/connections/lg.dart' as Lg;
 import 'package:ai_app/screens/info_screen.dart';
 import 'package:ai_app/screens/settings.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toasty_box/toast_enums.dart';
 import 'package:toasty_box/toast_service.dart';
 
@@ -238,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         debounceTime: 800,
                         isLatLngRequired: true,
                         getPlaceDetailWithLatLng: (Prediction prediction) {},
-                        itemClick: (Prediction prediction) {
+                        itemClick: (Prediction prediction) async {
                           print(prediction.types);
                           for (var type in prediction.types!) {
                             if (type == "locality" ||
@@ -248,16 +243,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                           }
                           if (isCity) {
+                            await Future.delayed(Duration(seconds: 1));
                             print("It is a city");
                             print("placeDetails 2nd ${prediction.description}");
                             String cityName =
                                 prediction.description!.split(',')[0].trim();
                             print("City Name: $cityName");
+                            double cityLat = double.parse(prediction.lat!);
+                            double cityLong = double.parse(prediction.lng!);
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => CityInformation(
                                 cityName: cityName,
-                                cityLat: double.parse(prediction.lat!),
-                                cityLong: double.parse(prediction.lng!),
+                                cityLat: cityLat,
+                                cityLong: cityLong,
                               ),
                             ));
                           } else {

@@ -1,27 +1,21 @@
 import 'dart:async';
-
-import 'package:ai_app/components/cities.dart';
 import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/components/drawer.dart';
+import 'package:ai_app/connections/gemini.dart';
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
-import 'package:ai_app/connections/lg.dart' as Lg;
-import 'package:ai_app/screens/home_screen.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:ai_app/models/city.dart';
+import 'package:ai_app/models/orbit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
-import 'package:google_places_flutter/model/prediction.dart';
 import 'package:group_button/group_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tap_builder/tap_builder.dart';
+import 'package:toasty_box/toast_enums.dart';
+import 'package:toasty_box/toasty_box.dart';
 
 class CityInformation extends StatefulWidget {
   final String cityName;
@@ -38,39 +32,55 @@ class CityInformation extends StatefulWidget {
 }
 
 class CityInformationState extends State<CityInformation> {
+  bool connectionStatus = false;
+  late LGConnection lg;
+  String story = "";
+  bool isLoading = true;
+  List<String> descriptionsChosen = [];
+  Future<void> _connectToLG() async {
+    bool? result = await lg.connectToLG();
+    setState(() {
+      connectionStatus = result!;
+    });
+  }
+
+  late City city;
+
+  getCityData() async {
+    String cityname = widget.cityName;
+    city = await Gemini().getCoordinates(cityname);
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    lg = LGConnection();
+    _connectToLG();
+    getCityData();
+  }
+
   @override
   Widget build(BuildContext context) {
     final _scaffoldKey = GlobalKey<ScaffoldState>();
-    bool connectionStatus = false;
-    late LGConnection lg;
-    final apiKey = dotenv.env['MAP_API_KEY'];
-    TextEditingController _textEditingController = TextEditingController();
 
-    Future<void> _connectToLG() async {
-      bool? result = await lg.connectToLG();
-      setState(() {
-        connectionStatus = result!;
-      });
-    }
-
+    List<String> buttonsValue = [
+      "Geographic",
+      "Exciting",
+      "Historic",
+      "Scenic",
+      "Cultural",
+      "Fascinating",
+    ];
     String getString(List<String> descriptions) {
       String result = "";
-      for (int i = 0; i < descriptions.length - 1; ++i) {
-        if (i == 0) {
-          break;
-        } else {
-          result += descriptions[i] + " ";
-        }
+      for (int i = 0; i < descriptions.length; ++i) {
+        result += "${descriptions[i]} ";
       }
-      print("result");
+      print(result);
       return result;
-    }
-
-    @override
-    void initState() {
-      super.initState();
-      lg = LGConnection();
-      _connectToLG();
     }
 
     CameraPosition _kGooglePlex = CameraPosition(
@@ -79,12 +89,12 @@ class CityInformationState extends State<CityInformation> {
     );
     final Completer<GoogleMapController> _controllerGoogleMap =
         Completer<GoogleMapController>();
-
     late GoogleMapController newGoogleMapController;
+
     var size = MediaQuery.of(context).size;
     return Scaffold(
         key: _scaffoldKey,
-        endDrawer: AppDrawer(size: size),
+       
         backgroundColor: backgroundColor,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(135.0),
@@ -142,20 +152,7 @@ class CityInformationState extends State<CityInformation> {
                     ),
                   ],
                 ),
-                actions: [
-                  IconButton(
-                      onPressed: () {
-                        _scaffoldKey.currentState!.openEndDrawer();
-                      },
-                      icon: Container(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 45, 0),
-                        child: Icon(
-                          Icons.menu,
-                          color: Colors.white,
-                          size: 35.sp,
-                        ),
-                      ))
-                ]),
+                ),
           ),
         ),
         body: Padding(
@@ -214,6 +211,27 @@ class CityInformationState extends State<CityInformation> {
                       alignment: Alignment.center,
                       width: size.width * 0.35,
                       child: GroupButton(
+                          onSelected: (value, index, isSelected) {
+                            if (descriptionsChosen.length < 3) {
+                              if (descriptionsChosen
+                                  .contains(buttonsValue[index])) {
+                                descriptionsChosen.remove(buttonsValue[index]);
+                              } else {
+                                descriptionsChosen.add(buttonsValue[index]);
+                              }
+                            } else if (descriptionsChosen
+                                .contains(buttonsValue[index])) {
+                              descriptionsChosen.remove(buttonsValue[index]);
+                            } else {
+                              ToastService.showErrorToast(
+                                context,
+                                isClosable: true,
+                                length: ToastLength.medium,
+                                expandedHeight: 100,
+                                message: "Maximum Three can be selected!",
+                              );
+                            }
+                          },
                           maxSelected: 3,
                           options: GroupButtonOptions(
                             selectedShadow: const [],
@@ -242,15 +260,7 @@ class CityInformationState extends State<CityInformation> {
                             elevation: 8,
                           ),
                           isRadio: false,
-                          buttons: [
-                            // "Creative",
-                            "Geographic",
-                            "Exciting",
-                            "Historic",
-                            "Scenic",
-                            "Cultural",
-                            "Fascinating",
-                          ]),
+                          buttons: buttonsValue),
                     ),
                     SizedBox(
                       height: 45.h,
@@ -263,7 +273,13 @@ class CityInformationState extends State<CityInformation> {
                         width: size.width * 0.17,
                         height: 80,
                         child: AnimatedTapBuilder(
-                          onTap: () async {},
+                          onTap: isLoading
+                              ? null
+                              : () async {
+                                  // story = await Gemini().getStory(
+                                  //     widget.cityName, getString(descriptionsChosen));
+                                  print(city.places[0].coordinates.latitude);
+                                },
                           builder: (context, state, isFocused, cursorLocation,
                               cursorAlignment) {
                             cursorAlignment = state == TapState.pressed
@@ -363,7 +379,222 @@ class CityInformationState extends State<CityInformation> {
                     SizedBox(
                       height: 22.h,
                     ),
-                    AnimatedStateButton(),
+                    Row(
+                      children: [
+                        Container(
+                          width: size.width * 0.17,
+                          height: 120,
+                          child: AnimatedTapBuilder(
+                            onTap: () async {
+                                    String placesdata =
+                                        Orbit().generateOrbit(city.places);
+                                    String content =
+                                        Orbit().buildOrbit(placesdata);
+                                    print(content);
+                                    await lg.buildOrbit(content);
+                                  },
+                            builder: (context, state, isFocused, cursorLocation,
+                                cursorAlignment) {
+                              cursorAlignment = state == TapState.pressed
+                                  ? Alignment(
+                                      -cursorAlignment.x, -cursorAlignment.y)
+                                  : Alignment.center;
+                              return AnimatedContainer(
+                                height: 200,
+                                transformAlignment: Alignment.center,
+                                transform:
+                                    Matrix4.rotationX(-cursorAlignment.y * 0.2)
+                                      ..rotateY(cursorAlignment.x * 0.2)
+                                      ..scale(
+                                        state == TapState.pressed ? 0.94 : 1.0,
+                                      ),
+                                duration: const Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.black,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Stack(
+                                    fit: StackFit.passthrough,
+                                    children: [
+                                      AnimatedOpacity(
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        opacity: state == TapState.pressed
+                                            ? 0.6
+                                            : 0.8,
+                                        child: Image.asset(
+                                          'assets/images/orbit1.jpg',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      AnimatedContainer(
+                                        height: 200,
+                                        transformAlignment: Alignment.center,
+                                        transform: Matrix4.translationValues(
+                                          cursorAlignment.x * 3,
+                                          cursorAlignment.y * 3,
+                                          0,
+                                        ),
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        child: const Center(
+                                          child: Text(
+                                            'Start Orbit',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 25,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned.fill(
+                                        child: AnimatedAlign(
+                                          duration:
+                                              const Duration(milliseconds: 200),
+                                          alignment: Alignment(
+                                              -cursorAlignment.x,
+                                              -cursorAlignment.y),
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                                milliseconds: 200),
+                                            width: 10,
+                                            height: 10,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white
+                                                  .withOpacity(0.01),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.white
+                                                      .withOpacity(state ==
+                                                              TapState.pressed
+                                                          ? 0.2
+                                                          : 0.0),
+                                                  blurRadius: 200,
+                                                  spreadRadius: 130,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                        ),
+                        Container(
+                          width: size.width * 0.17,
+                          height: 120,
+                          child: AnimatedTapBuilder(
+                            onTap: () {},
+                            builder: (context, state, isFocused, cursorLocation,
+                                cursorAlignment) {
+                              cursorAlignment = state == TapState.pressed
+                                  ? Alignment(
+                                      -cursorAlignment.x, -cursorAlignment.y)
+                                  : Alignment.center;
+                              return AnimatedContainer(
+                                height: 200,
+                                transformAlignment: Alignment.center,
+                                transform:
+                                    Matrix4.rotationX(-cursorAlignment.y * 0.2)
+                                      ..rotateY(cursorAlignment.x * 0.2)
+                                      ..scale(
+                                        state == TapState.pressed ? 0.94 : 1.0,
+                                      ),
+                                duration: const Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.black,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Stack(
+                                    fit: StackFit.passthrough,
+                                    children: [
+                                      AnimatedOpacity(
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        opacity: state == TapState.pressed
+                                            ? 0.6
+                                            : 0.8,
+                                        child:
+                                            // Container(
+                                            //   color: secondColor,
+                                            // )
+                                            Image.asset(
+                                          'assets/images/story.jpg',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      AnimatedContainer(
+                                        height: 200,
+                                        transformAlignment: Alignment.center,
+                                        transform: Matrix4.translationValues(
+                                          cursorAlignment.x * 3,
+                                          cursorAlignment.y * 3,
+                                          0,
+                                        ),
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        child: const Center(
+                                          child: Text(
+                                            'Narrate Story',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 25,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned.fill(
+                                        child: AnimatedAlign(
+                                          duration:
+                                              const Duration(milliseconds: 200),
+                                          alignment: Alignment(
+                                              -cursorAlignment.x,
+                                              -cursorAlignment.y),
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                                milliseconds: 200),
+                                            width: 10,
+                                            height: 10,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white
+                                                  .withOpacity(0.01),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.white
+                                                      .withOpacity(state ==
+                                                              TapState.pressed
+                                                          ? 0.2
+                                                          : 0.0),
+                                                  blurRadius: 200,
+                                                  spreadRadius: 130,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                     SizedBox(
                       height: 20.h,
                     ),
@@ -503,200 +734,203 @@ class CityInformationState extends State<CityInformation> {
   }
 }
 
-class AnimatedStateButton extends StatelessWidget {
-  const AnimatedStateButton({
-    Key? key,
-  }) : super(key: key);
+// class AnimatedStateButton extends StatelessWidget {
+//   const AnimatedStateButton({
+//     Key? key,
+//   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    return Row(
-      children: [
-        Container(
-          width: size.width * 0.17,
-          height: 120,
-          child: AnimatedTapBuilder(
-            onTap: () {},
-            builder:
-                (context, state, isFocused, cursorLocation, cursorAlignment) {
-              cursorAlignment = state == TapState.pressed
-                  ? Alignment(-cursorAlignment.x, -cursorAlignment.y)
-                  : Alignment.center;
-              return AnimatedContainer(
-                height: 200,
-                transformAlignment: Alignment.center,
-                transform: Matrix4.rotationX(-cursorAlignment.y * 0.2)
-                  ..rotateY(cursorAlignment.x * 0.2)
-                  ..scale(
-                    state == TapState.pressed ? 0.94 : 1.0,
-                  ),
-                duration: const Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.black,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(
-                    fit: StackFit.passthrough,
-                    children: [
-                      AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        opacity: state == TapState.pressed ? 0.6 : 0.8,
-                        child:
-                            // Container(
-                            //   color: secondColor,
-                            // )
-                            Image.asset(
-                          'assets/images/orbit1.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      AnimatedContainer(
-                        height: 200,
-                        transformAlignment: Alignment.center,
-                        transform: Matrix4.translationValues(
-                          cursorAlignment.x * 3,
-                          cursorAlignment.y * 3,
-                          0,
-                        ),
-                        duration: const Duration(milliseconds: 200),
-                        child: const Center(
-                          child: Text(
-                            'Start Orbit',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 25,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: AnimatedAlign(
-                          duration: const Duration(milliseconds: 200),
-                          alignment:
-                              Alignment(-cursorAlignment.x, -cursorAlignment.y),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.01),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(
-                                      state == TapState.pressed ? 0.2 : 0.0),
-                                  blurRadius: 200,
-                                  spreadRadius: 130,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        SizedBox(
-          width: 20.w,
-        ),
-        Container(
-          width: size.width * 0.17,
-          height: 120,
-          child: AnimatedTapBuilder(
-            onTap: () {},
-            builder:
-                (context, state, isFocused, cursorLocation, cursorAlignment) {
-              cursorAlignment = state == TapState.pressed
-                  ? Alignment(-cursorAlignment.x, -cursorAlignment.y)
-                  : Alignment.center;
-              return AnimatedContainer(
-                height: 200,
-                transformAlignment: Alignment.center,
-                transform: Matrix4.rotationX(-cursorAlignment.y * 0.2)
-                  ..rotateY(cursorAlignment.x * 0.2)
-                  ..scale(
-                    state == TapState.pressed ? 0.94 : 1.0,
-                  ),
-                duration: const Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.black,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(
-                    fit: StackFit.passthrough,
-                    children: [
-                      AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        opacity: state == TapState.pressed ? 0.6 : 0.8,
-                        child:
-                            // Container(
-                            //   color: secondColor,
-                            // )
-                            Image.asset(
-                          'assets/images/story.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      AnimatedContainer(
-                        height: 200,
-                        transformAlignment: Alignment.center,
-                        transform: Matrix4.translationValues(
-                          cursorAlignment.x * 3,
-                          cursorAlignment.y * 3,
-                          0,
-                        ),
-                        duration: const Duration(milliseconds: 200),
-                        child: const Center(
-                          child: Text(
-                            'Narrate Story',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 25,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: AnimatedAlign(
-                          duration: const Duration(milliseconds: 200),
-                          alignment:
-                              Alignment(-cursorAlignment.x, -cursorAlignment.y),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.01),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(
-                                      state == TapState.pressed ? 0.2 : 0.0),
-                                  blurRadius: 200,
-                                  spreadRadius: 130,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     var size = MediaQuery.of(context).size;
+//     return 
+//     Row(
+//       children: [
+//         Container(
+//           width: size.width * 0.17,
+//           height: 120,
+//           child: AnimatedTapBuilder(
+//             onTap: () async{
+//               // await lg.buildOrbit();
+//             },
+//             builder:
+//                 (context, state, isFocused, cursorLocation, cursorAlignment) {
+//               cursorAlignment = state == TapState.pressed
+//                   ? Alignment(-cursorAlignment.x, -cursorAlignment.y)
+//                   : Alignment.center;
+//               return AnimatedContainer(
+//                 height: 200,
+//                 transformAlignment: Alignment.center,
+//                 transform: Matrix4.rotationX(-cursorAlignment.y * 0.2)
+//                   ..rotateY(cursorAlignment.x * 0.2)
+//                   ..scale(
+//                     state == TapState.pressed ? 0.94 : 1.0,
+//                   ),
+//                 duration: const Duration(milliseconds: 200),
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(12),
+//                   color: Colors.black,
+//                 ),
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(12),
+//                   child: Stack(
+//                     fit: StackFit.passthrough,
+//                     children: [
+//                       AnimatedOpacity(
+//                         duration: const Duration(milliseconds: 200),
+//                         opacity: state == TapState.pressed ? 0.6 : 0.8,
+//                         child:
+//                             // Container(
+//                             //   color: secondColor,
+//                             // )
+//                             Image.asset(
+//                           'assets/images/orbit1.jpg',
+//                           fit: BoxFit.cover,
+//                         ),
+//                       ),
+//                       AnimatedContainer(
+//                         height: 200,
+//                         transformAlignment: Alignment.center,
+//                         transform: Matrix4.translationValues(
+//                           cursorAlignment.x * 3,
+//                           cursorAlignment.y * 3,
+//                           0,
+//                         ),
+//                         duration: const Duration(milliseconds: 200),
+//                         child: const Center(
+//                           child: Text(
+//                             'Start Orbit',
+//                             style: TextStyle(
+//                               color: Colors.white,
+//                               fontWeight: FontWeight.w800,
+//                               fontSize: 25,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                       Positioned.fill(
+//                         child: AnimatedAlign(
+//                           duration: const Duration(milliseconds: 200),
+//                           alignment:
+//                               Alignment(-cursorAlignment.x, -cursorAlignment.y),
+//                           child: AnimatedContainer(
+//                             duration: const Duration(milliseconds: 200),
+//                             width: 10,
+//                             height: 10,
+//                             decoration: BoxDecoration(
+//                               color: Colors.white.withOpacity(0.01),
+//                               boxShadow: [
+//                                 BoxShadow(
+//                                   color: Colors.white.withOpacity(
+//                                       state == TapState.pressed ? 0.2 : 0.0),
+//                                   blurRadius: 200,
+//                                   spreadRadius: 130,
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                         ),
+//                       )
+//                     ],
+//                   ),
+//                 ),
+//               );
+//             },
+//           ),
+//         ),
+//         SizedBox(
+//           width: 20.w,
+//         ),
+//         Container(
+//           width: size.width * 0.17,
+//           height: 120,
+//           child: AnimatedTapBuilder(
+//             onTap: () {},
+//             builder:
+//                 (context, state, isFocused, cursorLocation, cursorAlignment) {
+//               cursorAlignment = state == TapState.pressed
+//                   ? Alignment(-cursorAlignment.x, -cursorAlignment.y)
+//                   : Alignment.center;
+//               return AnimatedContainer(
+//                 height: 200,
+//                 transformAlignment: Alignment.center,
+//                 transform: Matrix4.rotationX(-cursorAlignment.y * 0.2)
+//                   ..rotateY(cursorAlignment.x * 0.2)
+//                   ..scale(
+//                     state == TapState.pressed ? 0.94 : 1.0,
+//                   ),
+//                 duration: const Duration(milliseconds: 200),
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(12),
+//                   color: Colors.black,
+//                 ),
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(12),
+//                   child: Stack(
+//                     fit: StackFit.passthrough,
+//                     children: [
+//                       AnimatedOpacity(
+//                         duration: const Duration(milliseconds: 200),
+//                         opacity: state == TapState.pressed ? 0.6 : 0.8,
+//                         child:
+//                             // Container(
+//                             //   color: secondColor,
+//                             // )
+//                             Image.asset(
+//                           'assets/images/story.jpg',
+//                           fit: BoxFit.cover,
+//                         ),
+//                       ),
+//                       AnimatedContainer(
+//                         height: 200,
+//                         transformAlignment: Alignment.center,
+//                         transform: Matrix4.translationValues(
+//                           cursorAlignment.x * 3,
+//                           cursorAlignment.y * 3,
+//                           0,
+//                         ),
+//                         duration: const Duration(milliseconds: 200),
+//                         child: const Center(
+//                           child: Text(
+//                             'Narrate Story',
+//                             style: TextStyle(
+//                               color: Colors.white,
+//                               fontWeight: FontWeight.w800,
+//                               fontSize: 25,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                       Positioned.fill(
+//                         child: AnimatedAlign(
+//                           duration: const Duration(milliseconds: 200),
+//                           alignment:
+//                               Alignment(-cursorAlignment.x, -cursorAlignment.y),
+//                           child: AnimatedContainer(
+//                             duration: const Duration(milliseconds: 200),
+//                             width: 10,
+//                             height: 10,
+//                             decoration: BoxDecoration(
+//                               color: Colors.white.withOpacity(0.01),
+//                               boxShadow: [
+//                                 BoxShadow(
+//                                   color: Colors.white.withOpacity(
+//                                       state == TapState.pressed ? 0.2 : 0.0),
+//                                   blurRadius: 200,
+//                                   spreadRadius: 130,
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                         ),
+//                       )
+//                     ],
+//                   ),
+//                 ),
+//               );
+//             },
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }

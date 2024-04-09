@@ -19,25 +19,50 @@ class Orbit {
 
   generateOrbit(List<Place> places) {
     double heading = 0;
+    int orbit = 0;
     String content = '';
-    String range = '40000';
+    String range = '500';
+    int altitude = 200;
     for (int i = 0; i < places.length; i++) {
       content += '''
             <gx:FlyTo>
-              <gx:duration>1.2</gx:duration>
+              <gx:duration>2</gx:duration>
               <gx:flyToMode>smooth</gx:flyToMode>
               <LookAt>
-                  <longitude>${places[i].coordinates.longitude}</longitude>
-                  <latitude>${places[i].coordinates.latitude}</latitude>
+                  <longitude>${places[i].coordinates.longitude - 0.0}</longitude>
+                  <latitude>${places[i].coordinates.latitude - 0.0}</latitude>
                   <heading>$heading</heading>
                   <tilt>60</tilt>
                   <range>${range}</range>
-                  <gx:fovy>60</gx:fovy> 
-                  <altitude>1500</altitude> 
+                  <gx:fovy>00</gx:fovy> 
+                  <altitude>$altitude</altitude> 
                   <gx:altitudeMode>absolute</gx:altitudeMode>
               </LookAt>
             </gx:FlyTo>
           ''';
+      while (orbit <= 36) {
+        if (heading >= 360) heading -= 360;
+        content += '''
+            <gx:FlyTo>
+              <gx:duration>0.5</gx:duration>
+              <gx:flyToMode>smooth</gx:flyToMode>
+              <LookAt>
+                  <longitude>${places[i].coordinates.longitude - 0.0}</longitude>
+                  <latitude>${places[i].coordinates.latitude - 0.0}</latitude>
+                  <heading>$heading</heading>
+                  <tilt>45</tilt>
+                  <range>${range}</range>
+                  <gx:fovy>60</gx:fovy> 
+                  <altitude>$altitude</altitude> 
+                  <gx:altitudeMode>absolute</gx:altitudeMode>
+              </LookAt>
+            </gx:FlyTo>
+          ''';
+        heading += 10;
+        orbit += 1;
+      }
+      heading = 0;
+      orbit = 0;
     }
     return content;
   }
