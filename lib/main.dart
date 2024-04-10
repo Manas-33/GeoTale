@@ -33,23 +33,21 @@ Future<void> main() async {
           // CityInformation(cityName: "Mumbai",cityLat: 12.32,cityLong: 19.067,)
           ,
           splash: Stack(children: [
-            Expanded(
-              child: Vitality.randomly(
-                background: backgroundColor,
-                maxOpacity: 0.6,
-                minOpacity: 0.3,
-                itemsCount: 45,
-                enableXMovements: false,
-                whenOutOfScreenMode: WhenOutOfScreenMode.Reflect,
-                maxSpeed: 1.5,
-                maxSize: 25,
-                minSpeed: 0.5,
-                randomItemsColors: [Colors.green],
-                randomItemsBehaviours: [
-                  ItemBehaviour(shape: ShapeType.FilledCircle),
-                  ItemBehaviour(shape: ShapeType.DoubleStrokeCircle)
-                ],
-              ),
+            Vitality.randomly(
+              background: backgroundColor,
+              maxOpacity: 0.6,
+              minOpacity: 0.3,
+              itemsCount: 45,
+              enableXMovements: false,
+              whenOutOfScreenMode: WhenOutOfScreenMode.Reflect,
+              maxSpeed: 1.5,
+              maxSize: 25,
+              minSpeed: 0.5,
+              randomItemsColors: [Colors.green],
+              randomItemsBehaviours: [
+                ItemBehaviour(shape: ShapeType.FilledCircle),
+                ItemBehaviour(shape: ShapeType.DoubleStrokeCircle)
+              ],
             ),
             Align(
               alignment: Alignment.center,
@@ -77,7 +75,7 @@ Future<void> main() async {
               ),
             ),
           ]),
-          duration: 1,
+          duration: 1700,
           splashTransition: SplashTransition.scaleTransition,
         ))));
   });

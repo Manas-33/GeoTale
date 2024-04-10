@@ -84,9 +84,9 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-    final _scaffoldKey = GlobalKey<ScaffoldState>();
     var size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
@@ -94,6 +94,7 @@ class _SettingsPageState extends State<SettingsPage> {
         return true;
       },
       child: Scaffold(
+        key: _scaffoldKey,
         endDrawer: AppDrawer(size: size),
         backgroundColor: backgroundColor,
         appBar: PreferredSize(
@@ -164,7 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   prefixIcon: Icon(Icons.computer),
                   labelText: 'IP address',
                   hintText: 'Enter Master IP',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(),fillColor: Colors.cyan
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -215,115 +216,119 @@ class _SettingsPageState extends State<SettingsPage> {
               const SizedBox(
                 height: 20,
               ),
-              TextButton(
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.green),
-                  shape: MaterialStatePropertyAll(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(50),
+              Row(
+                children: [
+                  TextButton(
+                    style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.green),
+                      shape: MaterialStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(50),
+                          ),
+                        ),
+                      ),
+                    ),
+                    onPressed: () async {
+                      await _saveSettings();
+                      bool? result = await lg.connectToLG();
+                      print(result);
+                      if (result == true) {
+                        setState(() {
+                          connectionStatus = true;
+                        });
+                        ToastService.showSuccessToast(
+                          context,
+                          length: ToastLength.medium,
+                          expandedHeight: 100,
+                          message: "This is a success toast 🥂!",
+                        );
+                        print('Connected to LG successfully');
+                      } else if (result == false || result == null) {
+                        ToastService.showSuccessToast(
+                          context,
+                          length: ToastLength.medium,
+                          expandedHeight: 100,
+                          message: "This is a warning toast!",
+                        );
+                      }
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.cast,
+                              color: Colors.white,
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              'CONNECT TO LG',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                onPressed: () async {
-                  await _saveSettings();
-                  bool? result = await lg.connectToLG();
-                  print(result);
-                  if (result == true) {
-                    setState(() {
-                      connectionStatus = true;
-                    });
-                    ToastService.showSuccessToast(
-                      context,
-                      length: ToastLength.medium,
-                      expandedHeight: 100,
-                      message: "This is a success toast 🥂!",
-                    );
-                    print('Connected to LG successfully');
-                  } else if (result == false || result == null) {
-                    ToastService.showSuccessToast(
-                      context,
-                      length: ToastLength.medium,
-                      expandedHeight: 100,
-                      message: "This is a warning toast!",
-                    );
-                  }
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.cast,
-                          color: Colors.white,
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'CONNECT TO LG',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
+                  TextButton(
+                    style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.green),
+                      shape: MaterialStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(50),
                           ),
-                        )
-                      ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                    onPressed: () async {
+                      var execResult = await lg.searchPlace("India");
+                      if (execResult != null) {
+                        print('Command executed successfully');
+                      } else {
+                        print('Failed to execute command');
+                      }
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.cast,
+                              color: Colors.white,
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              'SEND COMMAND TO LG',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
               SizedBox(
                 height: 20,
               ),
-              TextButton(
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.green),
-                  shape: MaterialStatePropertyAll(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(50),
-                      ),
-                    ),
-                  ),
-                ),
-                onPressed: () async {
-                  var execResult = await lg.searchPlace("India");
-                  if (execResult != null) {
-                    print('Command executed successfully');
-                  } else {
-                    print('Failed to execute command');
-                  }
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.cast,
-                          color: Colors.white,
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'SEND COMMAND TO LG',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              )
             ],
           ),
         ),
