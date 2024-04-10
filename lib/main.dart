@@ -1,5 +1,6 @@
 import 'package:ai_app/connections/gemini.dart';
 import 'package:ai_app/constants.dart';
+import 'package:ai_app/screens/about_screen.dart';
 import 'package:ai_app/screens/home_screen.dart';
 import 'package:ai_app/screens/info_screen.dart';
 import 'package:ai_app/screens/settings.dart';
@@ -75,7 +76,7 @@ Future<void> main() async {
               ),
             ),
           ]),
-          duration: 1700,
+          duration: 1,
           splashTransition: SplashTransition.scaleTransition,
         ))));
   });

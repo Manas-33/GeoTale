@@ -157,179 +157,367 @@ class _SettingsPageState extends State<SettingsPage> {
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              TextField(
-                controller: _ipController,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.computer),
-                  labelText: 'IP address',
-                  hintText: 'Enter Master IP',
-                  border: OutlineInputBorder(),fillColor: Colors.cyan
+              SizedBox(
+                height: 30.h,
+              ),
+              Container(
+                width: size.width * 0.9,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: secondColor,
+                      ),
+                      width: size.width * 0.4,
+                      height: 200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Text(
+                              "IP Address",
+                              style: googleTextStyle(
+                                  25.sp, FontWeight.w600, Colors.white),
+                            ),
+                            SizedBox(
+                              height: 25,
+                            ),
+                            TextField(
+                              keyboardType: TextInputType.number,
+                              style: googleTextStyle(
+                                  16.sp, FontWeight.w500, backgroundColor),
+                              controller: _ipController,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(15)),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5.0,
+                                  ),
+                                  child: Icon(
+                                    Icons.computer,
+                                    color: Colors.cyan,
+                                    size: 25,
+                                  ),
+                                ),
+                                hintText: 'Enter Master IP',
+                                hintStyle: googleTextStyle(
+                                    16.sp, FontWeight.w500, backgroundColor),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 30),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: secondColor,
+                      ),
+                      width: size.width * 0.4,
+                      height: 200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Text(
+                              "SSH Port",
+                              style: googleTextStyle(
+                                  25.sp, FontWeight.w600, Colors.white),
+                            ),
+                            SizedBox(
+                              height: 25,
+                            ),
+                            TextField(
+                              style: googleTextStyle(
+                                  16.sp, FontWeight.w500, backgroundColor),
+                              controller: _sshPortController,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(15)),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5.0,
+                                  ),
+                                  child: Icon(
+                                    Icons.settings_ethernet,
+                                    color: Colors.cyan,
+                                    size: 25,
+                                  ),
+                                ),
+                                hintText: '22',
+                                hintStyle: googleTextStyle(
+                                    16.sp, FontWeight.w500, backgroundColor),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 30),
+                              ),
+                              keyboardType: TextInputType.number,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _usernameController,
-                keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.person),
-                  labelText: 'LG Username',
-                  hintText: 'Enter your username',
-                  border: OutlineInputBorder(),
+              SizedBox(height: 25.h),
+              Container(
+                width: size.width * 0.9,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: secondColor,
+                      ),
+                      width: size.width * 0.4,
+                      height: 200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Text(
+                              "No. of LG rigs",
+                              style: googleTextStyle(
+                                  25.sp, FontWeight.w600, Colors.white),
+                            ),
+                            SizedBox(
+                              height: 25,
+                            ),
+                            TextField(
+                              style: googleTextStyle(
+                                  16.sp, FontWeight.w500, backgroundColor),
+                              controller: _rigsController,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(15)),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5.0,
+                                  ),
+                                  child: Icon(
+                                    Icons.memory,
+                                    color: Colors.cyan,
+                                    size: 25,
+                                  ),
+                                ),
+                                hintText: 'Enter the number of rigs',
+                                hintStyle: googleTextStyle(
+                                    16.sp, FontWeight.w500, backgroundColor),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 30),
+                              ),
+                              keyboardType: TextInputType.number,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.lock),
-                  labelText: 'LG Password',
-                  hintText: 'Enter your password',
-                  border: OutlineInputBorder(),
+              SizedBox(height: 25.h),
+              Container(
+                width: size.width * 0.9,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: secondColor,
+                      ),
+                      width: size.width * 0.4,
+                      height: 200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Text(
+                              "LG Username",
+                              style: googleTextStyle(
+                                  25.sp, FontWeight.w600, Colors.white),
+                            ),
+                            SizedBox(
+                              height: 25,
+                            ),
+                            TextField(
+                              style: googleTextStyle(
+                                  16.sp, FontWeight.w500, backgroundColor),
+                              controller: _usernameController,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(15)),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5.0,
+                                  ),
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.cyan,
+                                    size: 25,
+                                  ),
+                                ),
+                                hintText: 'Enter your username',
+                                hintStyle: googleTextStyle(
+                                    16.sp, FontWeight.w500, backgroundColor),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 30),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: secondColor,
+                      ),
+                      width: size.width * 0.4,
+                      height: 200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Text(
+                              "LG Password",
+                              style: googleTextStyle(
+                                  25.sp, FontWeight.w600, Colors.white),
+                            ),
+                            SizedBox(
+                              height: 25,
+                            ),
+                            TextField(
+                              obscureText: true,
+                              style: googleTextStyle(
+                                  16.sp, FontWeight.w500, backgroundColor),
+                              controller: _passwordController,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(15)),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5.0,
+                                  ),
+                                  child: Icon(
+                                    Icons.lock,
+                                    color: Colors.cyan,
+                                    size: 25,
+                                  ),
+                                ),
+                                hintText: 'Enter your password',
+                                hintStyle: googleTextStyle(
+                                    16.sp, FontWeight.w500, backgroundColor),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 30),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                obscureText: true,
               ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _sshPortController,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.settings_ethernet),
-                  labelText: 'SSH Port',
-                  hintText: '22',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _rigsController,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.memory),
-                  labelText: 'No. of LG rigs',
-                  hintText: 'Enter the number of rigs',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 25.h),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TextButton(
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.green),
-                      shape: MaterialStatePropertyAll(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(50),
-                          ),
-                        ),
-                      ),
-                    ),
-                    onPressed: () async {
-                      await _saveSettings();
-                      bool? result = await lg.connectToLG();
-                      print(result);
-                      if (result == true) {
-                        setState(() {
-                          connectionStatus = true;
-                        });
-                        ToastService.showSuccessToast(
-                          context,
-                          length: ToastLength.medium,
-                          expandedHeight: 100,
-                          message: "This is a success toast 🥂!",
-                        );
-                        print('Connected to LG successfully');
-                      } else if (result == false || result == null) {
-                        ToastService.showSuccessToast(
-                          context,
-                          length: ToastLength.medium,
-                          expandedHeight: 100,
-                          message: "This is a warning toast!",
-                        );
-                      }
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.cast,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              'CONNECT TO LG',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.green),
-                      shape: MaterialStatePropertyAll(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(50),
-                          ),
-                        ),
-                      ),
-                    ),
-                    onPressed: () async {
-                      var execResult = await lg.searchPlace("India");
-                      if (execResult != null) {
-                        print('Command executed successfully');
-                      } else {
-                        print('Failed to execute command');
-                      }
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.cast,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              'SEND COMMAND TO LG',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
+                  // GestureDetector(
+                  //   onTap: () {},
+                  //   child: Container(
+                  //     width: size.width * 0.25,
+                  //     height: 140,
+                  //     decoration: BoxDecoration(
+                  //         color: Colors.cyan,
+                  //         borderRadius: BorderRadius.circular(15)),
+                  //   ),
+                  // ),
                 ],
               ),
               SizedBox(
                 height: 20,
               ),
             ],
+          ),
+        ),
+        floatingActionButton: GestureDetector(
+          onTap: () async {
+            await _saveSettings();
+            bool? result = await lg.connectToLG();
+            print(result);
+            if (result == true) {
+              setState(() {
+                connectionStatus = true;
+              });
+              ToastService.showSuccessToast(
+                context,
+                length: ToastLength.medium,
+                expandedHeight: 100,
+                message: "Successfully Connected!",
+              );
+              print('Connected to LG successfully');
+            } else if (result == false || result == null) {
+              ToastService.showSuccessToast(
+                context,
+                length: ToastLength.medium,
+                expandedHeight: 100,
+                message: "This is a warning toast!",
+              );
+            }
+          },
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(
+              "Connect to LG",
+              textAlign: TextAlign.center,
+              style: googleTextStyle(20.sp, FontWeight.w700, backgroundColor),
+            ),
+            width: size.width * 0.1,
+            height: size.width * 0.1,
+            decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 5,
+                    blurRadius: 15,
+                    offset: Offset(0, 0), // changes position of shadow
+                  ),
+                ],
+                color: const Color.fromARGB(255, 99, 222, 239),
+                borderRadius: BorderRadius.circular(100)),
           ),
         ),
       ),
