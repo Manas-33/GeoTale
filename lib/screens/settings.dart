@@ -454,18 +454,7 @@ class _SettingsPageState extends State<SettingsPage> {
               SizedBox(height: 25.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // GestureDetector(
-                  //   onTap: () {},
-                  //   child: Container(
-                  //     width: size.width * 0.25,
-                  //     height: 140,
-                  //     decoration: BoxDecoration(
-                  //         color: Colors.cyan,
-                  //         borderRadius: BorderRadius.circular(15)),
-                  //   ),
-                  // ),
-                ],
+                children: [],
               ),
               SizedBox(
                 height: 20,

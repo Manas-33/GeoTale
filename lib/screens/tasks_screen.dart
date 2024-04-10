@@ -51,7 +51,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: 45.h,
+                        height: 60.h,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -91,7 +91,7 @@ class _TaskScreenState extends State<TaskScreen> {
                       _scaffoldKey.currentState!.openEndDrawer();
                     },
                     icon: Container(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 45, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 60, 0),
                       child: Icon(
                         Icons.menu,
                         color: Colors.white,
@@ -113,24 +113,191 @@ class _TaskScreenState extends State<TaskScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: size.width*0.85,
-                      child: Text("""This application leverages the capabilities of Gemini, a large language model, in conjunction with Google Earth to create an immersive interactive storytelling experience. By seamlessly integrating the power of natural language generation with the vast geographical knowledge of Google Earth, this application unlocks a world of possibilities for creative exploration and education.
-                    
-                    Here's an elaboration of the process:
-                    Location Selection:
-                    Users interact with the Liquid Galaxy globe, selecting a specific location that piques their interest.
-                    Story Generation:
-                    Once a location is chosen, Gemini's language model springs into action. Drawing on its vast knowledge and understanding of the world's diverse regions, cultures, and histories, Gemini crafts a unique short story tailored to the selected location.
-                    Story Presentation:
-                    The generated story is not merely displayed as text. Instead, it is skillfully interwoven with the location on the Liquid Galaxy screen, creating a captivating visual and narrative experience. The story unfolds as users explore the selected region, with text and visuals harmoniously complementing each other.
-                    Interactive Exploration:
-                    The application encourages users to actively explore the globe, discovering new stories and perspectives from various corners of the world. As they navigate from one location to another, Gemini continues to generate fresh narratives, ensuring a continuous and engaging storytelling journey.
-                    Educational Value:
-                    Beyond entertainment, this application holds educational potential. It presents a unique way to learn about different cultures, historical events, and geographical landmarks. By weaving stories around real-world locations, it fosters a deeper understanding and appreciation of the world's diverse heritage.
-                    This interactive storytelling experience aims to ignite curiosity, inspire creativity, and provide a novel way to engage with the wonders of our planet. We invite you to embark on this enchanting adventure and discover the limitless possibilities that lie within the fusion of language and geography.
-                    
-                    """,style: googleTextStyle(20.sp, FontWeight.w500, Colors.cyan),),
-                    )
+                      width: size.width * 0.88,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Relaunch Rig",
+                                textAlign: TextAlign.center,
+                                style: googleTextStyle(
+                                    32.sp, FontWeight.w700, backgroundColor),
+                              ),
+                              width: size.width * 0.39,
+                              height: size.width * 0.145,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 15,
+                                      offset: Offset(
+                                          0, 0), // changes position of shadow
+                                    ),
+                                  ],
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(60)),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Shutdown Rig",
+                                textAlign: TextAlign.center,
+                                style: googleTextStyle(
+                                    32.sp, FontWeight.w700, backgroundColor),
+                              ),
+                              width: size.width * 0.39,
+                              height: size.width * 0.145,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 15,
+                                      offset: Offset(
+                                          0, 0), // changes position of shadow
+                                    ),
+                                  ],
+                                  color: Colors.yellow,
+                                  borderRadius: BorderRadius.circular(60)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30.h,
+                    ),
+                    Container(
+                      width: size.width * 0.88,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Clean KML",
+                                textAlign: TextAlign.center,
+                                style: googleTextStyle(
+                                    32.sp, FontWeight.w700, backgroundColor),
+                              ),
+                              width: size.width * 0.39,
+                              height: size.width * 0.145,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 15,
+                                      offset: Offset(
+                                          0, 0), // changes position of shadow
+                                    ),
+                                  ],
+                                  color: Color.fromARGB(255, 103, 244, 108),
+                                  borderRadius: BorderRadius.circular(60)),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Reboot Rig",
+                                textAlign: TextAlign.center,
+                                style: googleTextStyle(
+                                    32.sp, FontWeight.w700, backgroundColor),
+                              ),
+                              width: size.width * 0.39,
+                              height: size.width * 0.145,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 15,
+                                      offset: Offset(
+                                          0, 0), // changes position of shadow
+                                    ),
+                                  ],
+                                  color: Color.fromARGB(255, 76, 232, 240),
+                                  borderRadius: BorderRadius.circular(60)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30.h,
+                    ),
+                    Container(
+                      width: size.width * 0.88,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Send KML",
+                                textAlign: TextAlign.center,
+                                style: googleTextStyle(
+                                    32.sp, FontWeight.w700, backgroundColor),
+                              ),
+                              width: size.width * 0.39,
+                              height: size.width * 0.145,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 15,
+                                      offset: Offset(
+                                          0, 0), // changes position of shadow
+                                    ),
+                                  ],
+                                  color: Colors.purple,
+                                  borderRadius: BorderRadius.circular(60)),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Set Refresh",
+                                textAlign: TextAlign.center,
+                                style: googleTextStyle(
+                                    32.sp, FontWeight.w700, backgroundColor),
+                              ),
+                              width: size.width * 0.39,
+                              height: size.width * 0.145,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 15,
+                                      offset: Offset(
+                                          0, 0), // changes position of shadow
+                                    ),
+                                  ],
+                                  color: Color.fromARGB(255, 255, 145, 0),
+                                  borderRadius: BorderRadius.circular(60)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
