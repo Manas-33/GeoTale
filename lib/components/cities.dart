@@ -1,4 +1,5 @@
 import 'package:ai_app/constants.dart';
+import 'package:ai_app/screens/info_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,16 +19,22 @@ class RecomendCities extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CityCard(
-                cityName: "Mumbai",
-                countryName: "India",
-                imageName: "mumbai.png"),
+              cityName: "Mumbai",
+              countryName: "India",
+              imageName: "mumbai.png",
+              cityLat: 19.0760,
+              cityLong: 72.8777,
+            ),
             SizedBox(
               height: 25.h,
             ),
             CityCard(
-                cityName: "Tokyo",
-                countryName: "Japan",
-                imageName: "tokyo.jpeg"),
+              cityName: "Tokyo",
+              countryName: "Japan",
+              imageName: "tokyo.jpeg",
+              cityLat: 35.6764,
+              cityLong: 139.6500,
+            ),
           ],
         ),
         SizedBox(
@@ -36,16 +43,22 @@ class RecomendCities extends StatelessWidget {
         Column(
           children: [
             CityCard(
-                cityName: "New York",
-                countryName: "America",
-                imageName: "newyork.jpg"),
+              cityName: "New York",
+              countryName: "America",
+              imageName: "newyork.jpg",
+              cityLat: 40.7128,
+              cityLong: -74.0060,
+            ),
             SizedBox(
               height: 25.h,
             ),
             CityCard(
-                cityName: "London",
-                countryName: "England",
-                imageName: "london.jpg"),
+              cityName: "London",
+              countryName: "England",
+              imageName: "london.jpg",
+              cityLat: 51.5072,
+              cityLong: 0.1276,
+            ),
           ],
         ),
         SizedBox(
@@ -54,16 +67,22 @@ class RecomendCities extends StatelessWidget {
         Column(
           children: [
             CityCard(
-                cityName: "Lleida",
-                countryName: "Spain",
-                imageName: "lleida.jpg"),
+              cityName: "Delhi",
+              countryName: "India",
+              imageName: "delhi.jpeg",
+              cityLat: 28.7041,
+              cityLong: 77.1025,
+            ),
             SizedBox(
               height: 25.h,
             ),
             CityCard(
-                cityName: "Paris",
-                countryName: "France",
-                imageName: "paris.jpg"),
+              cityName: "Paris",
+              countryName: "France",
+              imageName: "paris.jpg",
+              cityLat: 48.8566,
+              cityLong: 2.3522,
+            ),
           ],
         )
       ],
@@ -73,6 +92,8 @@ class RecomendCities extends StatelessWidget {
 
 class CityCard extends StatelessWidget {
   final String cityName;
+  final double cityLat;
+  final double cityLong;
   final String imageName;
   final String countryName;
 
@@ -81,12 +102,21 @@ class CityCard extends StatelessWidget {
     required this.cityName,
     required this.countryName,
     required this.imageName,
+    required this.cityLat,
+    required this.cityLong,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => CityInformation(
+            cityName: cityName,
+            cityLat: cityLat,
+            cityLong: cityLong,
+          ),
+        ));
         ///////////////
         print("hello");
       },

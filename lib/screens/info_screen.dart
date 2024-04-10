@@ -296,17 +296,17 @@ class CityInformationState extends State<CityInformation> {
                         ),
                         GestureDetector(
                             onTap:
-                                // isLoading
-                                //     ? () {
-                                //         ToastService.showErrorToast(
-                                //           context,
-                                //           isClosable: true,
-                                //           length: ToastLength.medium,
-                                //           expandedHeight: 100,
-                                //           message: "Content is being generated!",
-                                //         );
-                                //       }
-                                //     :
+                                isLoading
+                                    ? () {
+                                        ToastService.showErrorToast(
+                                          context,
+                                          isClosable: true,
+                                          length: ToastLength.medium,
+                                          expandedHeight: 100,
+                                          message: "Content is being generated!",
+                                        );
+                                      }
+                                    :
                                 () {
                               setState(() {
                                 isDesc = false;
