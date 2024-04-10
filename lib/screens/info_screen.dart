@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/components/drawer.dart';
 import 'package:ai_app/components/info_card.dart';
@@ -8,17 +10,21 @@ import 'package:ai_app/constants.dart';
 import 'package:ai_app/models/city.dart';
 import 'package:ai_app/models/orbit.dart';
 import 'package:ai_app/models/place.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:group_button/group_button.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tap_builder/tap_builder.dart';
 import 'package:toasty_box/toast_enums.dart';
 import 'package:toasty_box/toasty_box.dart';
+import 'package:http/http.dart' as http;
 
 class CityInformation extends StatefulWidget {
   final String cityName;
@@ -100,6 +106,26 @@ class CityInformationState extends State<CityInformation> {
       }
       print(result);
       return result;
+    }
+
+    textToVoice(String content) async {
+      final url =
+          Uri.parse("https://api.deepgram.com/v1/speak?model=aura-asteria-en");
+      String voiceApiKey = dotenv.env['DEEPGRAM_API_KEY']!;
+      final response = await http.post(url,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Token $voiceApiKey"
+          },
+          body: jsonEncode({"text": content}));
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+        final dir = await getApplicationDocumentsDirectory();
+        final file = File('${dir.path}/textToSpeech.wav');
+        await file.writeAsBytes(bytes);
+        final player = AudioPlayer();
+        await player.play(DeviceFileSource(file.path));
+      }
     }
 
     CameraPosition _kGooglePlex = CameraPosition(
@@ -295,24 +321,22 @@ class CityInformationState extends State<CityInformation> {
                           width: 25.w,
                         ),
                         GestureDetector(
-                            onTap:
-                                isLoading
-                                    ? () {
-                                        ToastService.showErrorToast(
-                                          context,
-                                          isClosable: true,
-                                          length: ToastLength.medium,
-                                          expandedHeight: 100,
-                                          message: "Content is being generated!",
-                                        );
-                                      }
-                                    :
-                                () {
-                              setState(() {
-                                isDesc = false;
-                              });
-                              print(isDesc);
-                            },
+                            onTap: isLoading
+                                ? () {
+                                    ToastService.showErrorToast(
+                                      context,
+                                      isClosable: true,
+                                      length: ToastLength.medium,
+                                      expandedHeight: 100,
+                                      message: "Content is being generated!",
+                                    );
+                                  }
+                                : () {
+                                    setState(() {
+                                      isDesc = false;
+                                    });
+                                    print(isDesc);
+                                  },
                             child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -720,7 +744,13 @@ class CityInformationState extends State<CityInformation> {
                                     width: size.width * 0.17,
                                     height: 120,
                                     child: AnimatedTapBuilder(
-                                      onTap: () {},
+                                      onTap: () async {
+                                        story = await Gemini().getStory(
+                                            widget.cityName,
+                                            getString(descriptionsChosen));
+                                        print(story);
+                                        await textToVoice(story);
+                                      },
                                       builder: (context, state, isFocused,
                                           cursorLocation, cursorAlignment) {
                                         cursorAlignment =
