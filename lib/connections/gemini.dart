@@ -21,7 +21,7 @@ IMPORTNANT RULE : 	dont add "```json"or "json" or "```" :
   "locations":[
     {
       "name": "Name of POI",
-      "description": "A brief  description about the place",
+      "description": "A description about the place in about 20 words",
       "coordinates":[
         {
         "latitude" : latitude,

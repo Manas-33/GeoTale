@@ -29,7 +29,9 @@ Future<void> main() async {
         child: MaterialApp(
             home: AnimatedSplashScreen(
           backgroundColor: backgroundColor,
-          nextScreen: HomeScreen(),
+          nextScreen: HomeScreen()
+          // CityInformation(cityName: "Mumbai",cityLat: 12.32,cityLong: 19.067,)
+          ,
           splash: Stack(children: [
             Expanded(
               child: Vitality.randomly(

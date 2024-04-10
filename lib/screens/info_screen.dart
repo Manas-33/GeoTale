@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/components/drawer.dart';
+import 'package:ai_app/components/info_card.dart';
 import 'package:ai_app/connections/gemini.dart';
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
 import 'package:ai_app/models/city.dart';
 import 'package:ai_app/models/orbit.dart';
+import 'package:ai_app/models/place.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,7 @@ class CityInformationState extends State<CityInformation> {
   String story = "";
   bool isLoading = true;
   List<String> descriptionsChosen = [];
+
   Future<void> _connectToLG() async {
     bool? result = await lg.connectToLG();
     setState(() {
@@ -53,17 +56,30 @@ class CityInformationState extends State<CityInformation> {
     setState(() {
       isLoading = false;
     });
+    initCards(city);
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   lg = LGConnection();
-  //   _connectToLG();
-  //   getCityData();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    lg = LGConnection();
+    _connectToLG();
+    getCityData();
+  }
 
   bool isDesc = true;
+  List<Widget> carouselCards = [];
+  void initCards(City city) {
+    int length = city.places.length;
+    for (int i = 0; i < length; i++) {
+      Place place = city.places[i];
+      carouselCards.add(InformationCard(
+          size: MediaQuery.of(context).size,
+          placeName: place.name,
+          placeDescription: place.description));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -76,6 +92,7 @@ class CityInformationState extends State<CityInformation> {
       "Cultural",
       "Fascinating",
     ];
+
     String getString(List<String> descriptions) {
       String result = "";
       for (int i = 0; i < descriptions.length; ++i) {
@@ -255,14 +272,16 @@ class CityInformationState extends State<CityInformation> {
                         GestureDetector(
                             onTap: () {
                               setState(() {
-                                isDesc = !isDesc;
+                                isDesc = true;
                               });
                               print(isDesc);
                             },
                             child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
-                                  color: Colors.white,
+                                  color: isDesc
+                                      ? Color.fromARGB(255, 106, 255, 215)
+                                      : Colors.white,
                                 ),
                                 alignment: Alignment.center,
                                 width: size.width * 0.14,
@@ -276,16 +295,30 @@ class CityInformationState extends State<CityInformation> {
                           width: 25.w,
                         ),
                         GestureDetector(
-                            onTap: () {
+                            onTap:
+                                // isLoading
+                                //     ? () {
+                                //         ToastService.showErrorToast(
+                                //           context,
+                                //           isClosable: true,
+                                //           length: ToastLength.medium,
+                                //           expandedHeight: 100,
+                                //           message: "Content is being generated!",
+                                //         );
+                                //       }
+                                //     :
+                                () {
                               setState(() {
-                                isDesc = !isDesc;
+                                isDesc = false;
                               });
                               print(isDesc);
                             },
                             child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
-                                  color: Color.fromARGB(255, 106, 255, 215),
+                                  color: isDesc
+                                      ? Colors.white
+                                      : Color.fromARGB(255, 106, 255, 215),
                                 ),
                                 alignment: Alignment.center,
                                 width: size.width * 0.14,
@@ -517,48 +550,64 @@ class CityInformationState extends State<CityInformation> {
                                     width: size.width * 0.17,
                                     height: 120,
                                     child: AnimatedTapBuilder(
-                                      onTap: () async {
-                                        String placesdata =
-                                            Orbit().generateOrbit(city.places);
-                                        String content =
-                                            Orbit().buildOrbit(placesdata);
-                                        print(content);
-                                        await lg.buildOrbit(content);
-                                        for (int i = 0;
-                                            i < city.places.length;
-                                            i++) {
-                                          await lg.openBalloon(
-                                              "orbitballoon",
-                                              city.places[i].name,
-                                              city.name,
-                                              240,
-                                              city.places[i].description,
-                                              city.places[i].coordinates
-                                                  .latitude,
-                                              city.places[i].coordinates
-                                                  .longitude);
-                                          double bearing = 0;
-                                          int orbit = 0;
-                                          while (orbit <= 36) {
-                                            if (bearing >= 360) bearing -= 360;
-                                            moveCameraToNewPosition(
-                                                LatLng(
+                                      onTap: isLoading
+                                          ? () {
+                                              ToastService.showErrorToast(
+                                                context,
+                                                isClosable: true,
+                                                length: ToastLength.medium,
+                                                expandedHeight: 100,
+                                                message:
+                                                    "Content is being generated!",
+                                              );
+                                            }
+                                          : () async {
+                                              String placesdata = Orbit()
+                                                  .generateOrbit(city.places);
+                                              String content = Orbit()
+                                                  .buildOrbit(placesdata);
+                                              print(content);
+                                              await lg.buildOrbit(content);
+                                              for (int i = 0;
+                                                  i < city.places.length;
+                                                  i++) {
+                                                await lg.openBalloon(
+                                                    "orbitballoon",
+                                                    city.places[i].name,
+                                                    city.name,
+                                                    240,
+                                                    city.places[i].description,
                                                     city.places[i].coordinates
                                                         .latitude,
                                                     city.places[i].coordinates
-                                                        .longitude),
-                                                17,
-                                                bearing);
-                                            bearing += 10;
-                                            orbit += 1;
-                                            await Future.delayed(
-                                                Duration(milliseconds: 500));
-                                          }
+                                                        .longitude);
+                                                double bearing = 0;
+                                                int orbit = 0;
+                                                while (orbit <= 36) {
+                                                  if (bearing >= 360)
+                                                    bearing -= 360;
+                                                  moveCameraToNewPosition(
+                                                      LatLng(
+                                                          city
+                                                              .places[i]
+                                                              .coordinates
+                                                              .latitude,
+                                                          city
+                                                              .places[i]
+                                                              .coordinates
+                                                              .longitude),
+                                                      17,
+                                                      bearing);
+                                                  bearing += 10;
+                                                  orbit += 1;
+                                                  await Future.delayed(Duration(
+                                                      milliseconds: 500));
+                                                }
 
-                                          await Future.delayed(
-                                              Duration(seconds: 2));
-                                        }
-                                      },
+                                                await Future.delayed(
+                                                    Duration(seconds: 2));
+                                              }
+                                            },
                                       builder: (context, state, isFocused,
                                           cursorLocation, cursorAlignment) {
                                         cursorAlignment =
@@ -815,7 +864,7 @@ class CityInformationState extends State<CityInformation> {
                                       Container(
                                         width: size.width * 0.35,
                                         child: Text(
-                                          "Mumbai (formerly called Bombay) is a densely populated city on India’s west coast. A financial centre, it's India's largest city. On the Mumbai Harbour waterfront stands the iconic Gateway of India stone arch, the city's former entrance for British monarchs and now a popular tourist spot.",
+                                          city.description,
                                           style: googleTextStyle(17.sp,
                                               FontWeight.w500, Colors.cyan),
                                           overflow: TextOverflow.clip,
@@ -838,159 +887,10 @@ class CityInformationState extends State<CityInformation> {
                                 height: 15.h,
                               ),
                               Container(
-                                height: size.height * 0.5,
+                                height: size.height * 0.38,
                                 width: size.width * 0.35,
                                 child: CarouselSlider(
-                                    items: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color: secondColor.withOpacity(0.5),
-                                            borderRadius:
-                                                BorderRadiusDirectional
-                                                    .circular(10)),
-                                        child: Container(
-                                          width: size.width * 0.35,
-                                          padding: EdgeInsets.all(30),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                "Description",
-                                                style: googleTextStyle(
-                                                    23.sp,
-                                                    FontWeight.w700,
-                                                    Colors.white),
-                                              ),
-                                              SizedBox(
-                                                height: 15.h,
-                                              ),
-                                              Container(
-                                                width: size.width * 0.35,
-                                                child: Text(
-                                                  "Mumbai (formerly called Bombay) is a densely populated city on India’s west coast. A financial centre, it's India's largest city. On the Mumbai Harbour waterfront stands the iconic Gateway of India stone arch, the city's former entrance for British monarchs and now a popular tourist spot.",
-                                                  style: googleTextStyle(
-                                                      17.sp,
-                                                      FontWeight.w500,
-                                                      Colors.cyan),
-                                                  overflow: TextOverflow.clip,
-                                                  textAlign: TextAlign.justify,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color: secondColor.withOpacity(0.5),
-                                            borderRadius:
-                                                BorderRadiusDirectional
-                                                    .circular(10)),
-                                        child: Container(
-                                          width: size.width * 0.35,
-                                          padding: EdgeInsets.all(30),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                "Description",
-                                                style: googleTextStyle(
-                                                    23.sp,
-                                                    FontWeight.w700,
-                                                    Colors.white),
-                                              ),
-                                              SizedBox(
-                                                height: 15.h,
-                                              ),
-                                              Container(
-                                                width: size.width * 0.35,
-                                                child: Text(
-                                                  "Mumbai (formerly called Bombay) is a densely populated city on India’s west coast. A financial centre, it's India's largest city. On the Mumbai Harbour waterfront stands the iconic Gateway of India stone arch, the city's former entrance for British monarchs and now a popular tourist spot.",
-                                                  style: googleTextStyle(
-                                                      17.sp,
-                                                      FontWeight.w500,
-                                                      Colors.cyan),
-                                                  overflow: TextOverflow.clip,
-                                                  textAlign: TextAlign.justify,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color: secondColor.withOpacity(0.5),
-                                            borderRadius:
-                                                BorderRadiusDirectional
-                                                    .circular(10)),
-                                        child: Container(
-                                          width: size.width * 0.35,
-                                          padding: EdgeInsets.all(30),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                "Description",
-                                                style: googleTextStyle(
-                                                    23.sp,
-                                                    FontWeight.w700,
-                                                    Colors.white),
-                                              ),
-                                              SizedBox(
-                                                height: 15.h,
-                                              ),
-                                              Container(
-                                                width: size.width * 0.35,
-                                                child: Text(
-                                                  "Mumbai (formerly called Bombay) is a densely populated city on India’s west coast. A financial centre, it's India's largest city. On the Mumbai Harbour waterfront stands the iconic Gateway of India stone arch, the city's former entrance for British monarchs and now a popular tourist spot.",
-                                                  style: googleTextStyle(
-                                                      17.sp,
-                                                      FontWeight.w500,
-                                                      Colors.cyan),
-                                                  overflow: TextOverflow.clip,
-                                                  textAlign: TextAlign.justify,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color: secondColor.withOpacity(0.5),
-                                            borderRadius:
-                                                BorderRadiusDirectional
-                                                    .circular(10)),
-                                        child: Container(
-                                          width: size.width * 0.35,
-                                          padding: EdgeInsets.all(30),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                "Description",
-                                                style: googleTextStyle(
-                                                    23.sp,
-                                                    FontWeight.w700,
-                                                    Colors.white),
-                                              ),
-                                              SizedBox(
-                                                height: 15.h,
-                                              ),
-                                              Container(
-                                                width: size.width * 0.35,
-                                                child: Text(
-                                                  "Mumbai (formerly called Bombay) is a densely populated city on India’s west coast. A financial centre, it's India's largest city. On the Mumbai Harbour waterfront stands the iconic Gateway of India stone arch, the city's former entrance for British monarchs and now a popular tourist spot.",
-                                                  style: googleTextStyle(
-                                                      17.sp,
-                                                      FontWeight.w500,
-                                                      Colors.cyan),
-                                                  overflow: TextOverflow.clip,
-                                                  textAlign: TextAlign.justify,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    items: carouselCards,
                                     options: CarouselOptions(
                                       enlargeCenterPage: true,
                                       height: 700,
@@ -1017,29 +917,62 @@ class CityInformationState extends State<CityInformation> {
               SizedBox(
                 width: 40.w,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    clipBehavior: Clip.hardEdge,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(22)),
-                    width: size.width * 0.5,
-                    height: size.height * 0.725,
-                    child: GoogleMap(
-                      myLocationEnabled: false,
-                      zoomGesturesEnabled: false,
-                      mapType: MapType.satellite,
-                      myLocationButtonEnabled: false,
-                      initialCameraPosition: _kGooglePlex,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controllerGoogleMap.complete(controller);
-                        newGoogleMapController = controller;
-                      },
-                    ),
+              Stack(children: [
+                Container(
+                  clipBehavior: Clip.hardEdge,
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(22)),
+                  width: size.width * 0.5,
+                  height: size.height * 0.725,
+                  child: GoogleMap(
+                    myLocationEnabled: false,
+                    zoomGesturesEnabled: false,
+                    mapType: MapType.satellite,
+                    myLocationButtonEnabled: false,
+                    initialCameraPosition: _kGooglePlex,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controllerGoogleMap.complete(controller);
+                      newGoogleMapController = controller;
+                    },
                   ),
-                ],
-              ),
+                ),
+                Positioned(
+                  bottom: 30.h,
+                  left: 20.h,
+                  child: GestureDetector(
+                      onTap: () async {
+                        for (int i = 0; i < city.places.length; i++) {
+                          double bearing = 0;
+                          int orbit = 0;
+                          while (orbit <= 36) {
+                            if (bearing >= 360) bearing -= 360;
+                            moveCameraToNewPosition(
+                                LatLng(city.places[i].coordinates.latitude,
+                                    city.places[i].coordinates.longitude),
+                                17,
+                                bearing);
+                            bearing += 10;
+                            orbit += 1;
+                            await Future.delayed(Duration(milliseconds: 500));
+                          }
+
+                          await Future.delayed(Duration(seconds: 2));
+                        }
+                      },
+                      child: Container(
+                          alignment: Alignment.center,
+                          width: 130,
+                          height: 60,
+                          decoration: BoxDecoration(
+                              color: Colors.cyan,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Text(
+                            "InApp Orbit",
+                            style: googleTextStyle(
+                                17.sp, FontWeight.w600, backgroundColor),
+                          ))),
+                ),
+              ]),
             ],
           ),
         ));
