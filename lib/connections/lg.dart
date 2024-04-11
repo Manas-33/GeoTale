@@ -48,6 +48,82 @@ class LGConnection {
     }
   }
 
+  relaunchLG() async {
+    try {
+      connectToLG();
+
+      final execResult = await _client!.execute("""RELAUNCH_CMD="\\
+          if [ -f /etc/init/lxdm.conf ]; then
+            export SERVICE=lxdm
+          elif [ -f /etc/init/lightdm.conf ]; then
+            export SERVICE=lightdm
+          else
+            exit 1
+          fi
+          if  [[ \\\$(service \\\$SERVICE status) =~ 'stop' ]]; then
+            echo $_passwordOrKey | sudo -S service \\\${SERVICE} start
+          else
+            echo $_passwordOrKey | sudo -S service \\\${SERVICE} restart
+          fi
+          " && sshpass -p $_passwordOrKey ssh -x -t lg@lg1 "\$RELAUNCH_CMD\"""");
+      return execResult;
+    } catch (e) {
+      print("An error occurred while executing the command: $e");
+      return null;
+    }
+  }
+
+  Future shutdownLG() async {
+    try {
+      connectToLG();
+
+      for (var i = int.parse(_numberOfRigs); i >= 1; i--) {
+        await _client!.execute(
+            'sshpass -p ${_passwordOrKey} ssh -t lg$i "echo ${_passwordOrKey} | sudo -S poweroff"');
+      }
+    } catch (e) {
+      print('Could not connect to host LG');
+      return Future.error(e);
+    }
+  }
+
+  cleanVisualization() async {
+    try {
+      connectToLG();
+
+      // var a = await _client!.execute('> /var/www/html/kmls.txt');
+      // return a;
+      await _client!.execute("echo '' > /var/www/html/kmls.txt");
+    } catch (e) {
+      print('Could not connect to host LG');
+      return Future.error(e);
+    }
+  }
+
+  Future<void> setRefresh() async {
+    const search = '<href>##LG_PHPIFACE##kml\\/slave_{{slave}}.kml<\\/href>';
+    const replace =
+        '<href>##LG_PHPIFACE##kml\\/slave_{{slave}}.kml<\\/href><refreshMode>onInterval<\\/refreshMode><refreshInterval>2<\\/refreshInterval>';
+    final command =
+        'echo $_passwordOrKey | sudo -S sed -i "s/$search/$replace/" ~/earth/kml/slave/myplaces.kml';
+
+    final clear =
+        'echo $_passwordOrKey | sudo -S sed -i "s/$replace/$search/" ~/earth/kml/slave/myplaces.kml';
+    try {
+      connectToLG();
+      for (var i = 2; i <= int.parse(_numberOfRigs); i++) {
+        final clearCmd = clear.replaceAll('{{slave}}', i.toString());
+        final cmd = command.replaceAll('{{slave}}', i.toString());
+        String query = 'sshpass -p $_passwordOrKey ssh -t lg$i \'{{cmd}}\'';
+        await _client!.execute(query.replaceAll('{{cmd}}', clearCmd));
+        await _client!.execute(query.replaceAll('{{cmd}}', cmd));
+      }
+      rebootLG();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   searchPlace(String placeName) async {
     try {
       connectToLG();

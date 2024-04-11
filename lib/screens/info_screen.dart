@@ -595,6 +595,8 @@ class CityInformationState extends State<CityInformation> {
                                               for (int i = 0;
                                                   i < city.places.length;
                                                   i++) {
+                                                textToVoice(
+                                                    city.places[i].description);
                                                 await lg.openBalloon(
                                                     "orbitballoon",
                                                     city.places[i].name,

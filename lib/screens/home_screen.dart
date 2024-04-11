@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
           preferredSize: const Size.fromHeight(135.0),
           child: Container(
             child: AppBar(
+                automaticallyImplyLeading: false,
                 backgroundColor: backgroundColor,
                 toolbarHeight: 150,
                 elevation: 0,

@@ -118,7 +118,9 @@ class _TaskScreenState extends State<TaskScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () async {
+                              await lg.relaunchLG();
+                            },
                             child: Container(
                               alignment: Alignment.center,
                               child: Text(
@@ -144,7 +146,9 @@ class _TaskScreenState extends State<TaskScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () async {
+                              await lg.shutdownLG();
+                            },
                             child: Container(
                               alignment: Alignment.center,
                               child: Text(
@@ -181,7 +185,9 @@ class _TaskScreenState extends State<TaskScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () async {
+                              await lg.cleanVisualization();
+                            },
                             child: Container(
                               alignment: Alignment.center,
                               child: Text(
@@ -207,7 +213,9 @@ class _TaskScreenState extends State<TaskScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () async {
+                              await lg.rebootLG();
+                            },
                             child: Container(
                               alignment: Alignment.center,
                               child: Text(
@@ -270,7 +278,9 @@ class _TaskScreenState extends State<TaskScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () async {
+                              await lg.setRefresh();
+                            },
                             child: Container(
                               alignment: Alignment.center,
                               child: Text(
