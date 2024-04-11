@@ -974,6 +974,7 @@ class CityInformationState extends State<CityInformation> {
                         for (int i = 0; i < city.places.length; i++) {
                           double bearing = 0;
                           int orbit = 0;
+                          textToVoice(city.places[i].description);
                           while (orbit <= 36) {
                             if (bearing >= 360) bearing -= 360;
                             moveCameraToNewPosition(
