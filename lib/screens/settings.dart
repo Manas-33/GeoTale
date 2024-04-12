@@ -140,6 +140,26 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 actions: [
                   IconButton(
+                    icon: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: secondColor),
+                        child: Image.asset(
+                          "assets/images/home.png",
+                          color: Colors.white,
+                        )),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => HomeScreen(),
+                      ));
+                    },
+                  ),
+                  SizedBox(
+                    width: 30.h,
+                  ),
+                  IconButton(
                       onPressed: () {
                         _scaffoldKey.currentState!.openEndDrawer();
                       },
@@ -478,12 +498,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 message: "Successfully Connected!",
               );
               print('Connected to LG successfully');
-            } else if (result == false || result == null) {
-              ToastService.showSuccessToast(
+            }
+            if (result == false || result == null) {
+              print("asdas");
+              ToastService.showErrorToast(
                 context,
                 length: ToastLength.medium,
                 expandedHeight: 100,
-                message: "This is a warning toast!",
+                message: "Could not connect to the Rig!",
               );
             }
           },

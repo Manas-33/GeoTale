@@ -2,6 +2,7 @@ import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/components/drawer.dart';
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
+import 'package:ai_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -86,6 +87,26 @@ class _TaskScreenState extends State<TaskScreen> {
                 ],
               ),
               actions: [
+                IconButton(
+                  icon: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: Color.fromARGB(255, 53, 161, 255)),
+                      child: Image.asset(
+                        "assets/images/home.png",
+                        color: Colors.white,
+                      )),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => HomeScreen(),
+                    ));
+                  },
+                ),
+                SizedBox(
+                  width: 30.h,
+                ),
                 IconButton(
                     onPressed: () {
                       _scaffoldKey.currentState!.openEndDrawer();
@@ -252,11 +273,13 @@ class _TaskScreenState extends State<TaskScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () async {
+                              await lg.cleanBalloon();
+                            },
                             child: Container(
                               alignment: Alignment.center,
                               child: Text(
-                                "Send KML",
+                                "Clean Logos",
                                 textAlign: TextAlign.center,
                                 style: googleTextStyle(
                                     32.sp, FontWeight.w700, backgroundColor),

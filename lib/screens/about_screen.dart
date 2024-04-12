@@ -2,6 +2,7 @@ import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/components/drawer.dart';
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
+import 'package:ai_app/screens/home_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -88,6 +89,26 @@ class _AboutScreenState extends State<AboutScreen> {
                 ],
               ),
               actions: [
+                IconButton(
+                  icon: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: Color.fromARGB(255, 53, 161, 255)),
+                      child: Image.asset(
+                        "assets/images/home.png",
+                        color: Colors.white,
+                      )),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => HomeScreen(),
+                    ));
+                  },
+                ),
+                SizedBox(
+                  width: 30.h,
+                ),
                 IconButton(
                     onPressed: () {
                       _scaffoldKey.currentState!.openEndDrawer();
@@ -265,6 +286,41 @@ class _AboutScreenState extends State<AboutScreen> {
                                       width: size.width * 0.35,
                                       child: Text(
                                         "GeoTale, aims to inspire curiosity and provide a unique way to explore the world. It's perfect for those who want to discover new places, learn about different cultures, or simply enjoy a captivating story.",
+                                        style: googleTextStyle(17.sp,
+                                            FontWeight.w500, Colors.cyan),
+                                        overflow: TextOverflow.clip,
+                                        textAlign: TextAlign.justify,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 2.h,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: secondColor.withOpacity(0.5),
+                                  borderRadius:
+                                      BorderRadiusDirectional.circular(10)),
+                              child: Container(
+                                width: size.width * 0.35,
+                                padding: EdgeInsets.all(30),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "In App Exploration",
+                                      style: googleTextStyle(
+                                          23.sp, FontWeight.w700, Colors.white),
+                                    ),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
+                                    Container(
+                                      width: size.width * 0.35,
+                                      child: Text(
+                                        "Don't have access to a Liquid Galaxy rig? No problem! GeoTale offers a built-in demonstration, allowing you to explore cities and their stories even without an external connection",
                                         style: googleTextStyle(17.sp,
                                             FontWeight.w500, Colors.cyan),
                                         overflow: TextOverflow.clip,

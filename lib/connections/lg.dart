@@ -136,6 +136,23 @@ class LGConnection {
     }
   }
 
+  Future cleanBalloon() async {
+    String blank = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+  <Document>
+  </Document>
+</kml>''';
+    int rigs = (int.parse(_numberOfRigs) / 2).floor() + 1;
+    try {
+      connectToLG();
+      return await _client!
+          .execute("echo '$blank' > /var/www/html/kml/slave_$rigs.kml");
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
