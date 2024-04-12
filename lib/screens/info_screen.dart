@@ -8,8 +8,10 @@ import 'package:ai_app/connections/gemini.dart';
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
 import 'package:ai_app/models/city.dart';
+import 'package:ai_app/models/flyto.dart';
 import 'package:ai_app/models/orbit.dart';
 import 'package:ai_app/models/place.dart';
+import 'package:ai_app/screens/tasks_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,6 +47,7 @@ class CityInformationState extends State<CityInformation> {
   late LGConnection lg;
   String story = "";
   bool isLoading = true;
+  bool isStoryLoading = true;
   List<String> descriptionsChosen = [];
 
   Future<void> _connectToLG() async {
@@ -65,12 +68,29 @@ class CityInformationState extends State<CityInformation> {
     initCards(city);
   }
 
+  fly() async {
+    FlyToView flyToView = FlyToView(
+        longitude: widget.cityLong,
+        latitude: widget.cityLat,
+        range: 6000,
+        tilt: 60,
+        heading: 20);
+    String command = flyToView.getCommand();
+    await lg.flyTo(command);
+  }
+
+  int x = 0;
+  goToPage(int index) {
+    x = index;
+  }
+
   @override
   void initState() {
     super.initState();
     lg = LGConnection();
     _connectToLG();
     getCityData();
+    fly();
   }
 
   bool isDesc = true;
@@ -248,7 +268,27 @@ class CityInformationState extends State<CityInformation> {
                       ),
                     ],
                   ),
-                )
+                ),
+                IconButton(
+                  icon: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: Color.fromARGB(255, 53, 161, 255)),
+                      child: Image.asset(
+                        "assets/images/tasks.png",
+                        color: Colors.white,
+                      )),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => TaskScreen(),
+                    ));
+                  },
+                ),
+                SizedBox(
+                  width: 30.h,
+                ),
               ],
             ),
           ),
@@ -586,6 +626,9 @@ class CityInformationState extends State<CityInformation> {
                                               );
                                             }
                                           : () async {
+                                              isDesc = false;
+                                              textToVoice(
+                                                  "${city.name} ${city.description}");
                                               String placesdata = Orbit()
                                                   .generateOrbit(city.places);
                                               String content = Orbit()
@@ -595,8 +638,10 @@ class CityInformationState extends State<CityInformation> {
                                               for (int i = 0;
                                                   i < city.places.length;
                                                   i++) {
+                                                goToPage(i);
                                                 textToVoice(
-                                                    city.places[i].description);
+                                                    "${city.places[i].name} ${city.places[i].description}");
+
                                                 await lg.openBalloon(
                                                     "orbitballoon",
                                                     city.places[i].name,
@@ -746,12 +791,62 @@ class CityInformationState extends State<CityInformation> {
                                     width: size.width * 0.17,
                                     height: 120,
                                     child: AnimatedTapBuilder(
-                                      onTap: () async {
-                                        story = await Gemini().getStory(
-                                            widget.cityName,
-                                            getString(descriptionsChosen));
-                                        print(story);
-                                        await textToVoice(story);
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              content: FutureBuilder(
+                                                future: Gemini().getStory(
+                                                  widget.cityName,
+                                                  getString(descriptionsChosen),
+                                                ),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<String>
+                                                        snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    );
+                                                  } else if (snapshot
+                                                      .hasError) {
+                                                    return Center(
+                                                      child: Text(
+                                                          'Error: ${snapshot.error}'),
+                                                    );
+                                                  } else {
+                                                    return Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(snapshot.data ??
+                                                            ''),
+                                                        SizedBox(height: 20),
+                                                        ElevatedButton(
+                                                          onPressed: () async {
+                                                            await textToVoice(
+                                                                snapshot.data ??
+                                                                    '');
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: Text(
+                                                              'Read Aloud'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        );
                                       },
                                       builder: (context, state, isFocused,
                                           cursorLocation, cursorAlignment) {
@@ -791,11 +886,7 @@ class CityInformationState extends State<CityInformation> {
                                                       state == TapState.pressed
                                                           ? 0.6
                                                           : 0.8,
-                                                  child:
-                                                      // Container(
-                                                      //   color: secondColor,
-                                                      // )
-                                                      Image.asset(
+                                                  child: Image.asset(
                                                     'assets/images/story.jpg',
                                                     fit: BoxFit.cover,
                                                   ),
@@ -926,7 +1017,7 @@ class CityInformationState extends State<CityInformation> {
                                     options: CarouselOptions(
                                       enlargeCenterPage: true,
                                       height: 700,
-                                      initialPage: 0,
+                                      initialPage: x,
                                       scrollDirection: Axis.horizontal,
                                       autoPlayInterval:
                                           const Duration(milliseconds: 5000),
@@ -973,10 +1064,14 @@ class CityInformationState extends State<CityInformation> {
                   left: 20.h,
                   child: GestureDetector(
                       onTap: () async {
+                        isDesc = false;
+                        textToVoice("${city.name} ${city.description}");
                         for (int i = 0; i < city.places.length; i++) {
+                          goToPage(i);
                           double bearing = 0;
                           int orbit = 0;
-                          textToVoice(city.places[i].description);
+                          textToVoice(
+                              "${city.places[i].name} ${city.places[i].description}");
                           while (orbit <= 36) {
                             if (bearing >= 360) bearing -= 360;
                             moveCameraToNewPosition(

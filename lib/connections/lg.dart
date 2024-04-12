@@ -100,6 +100,15 @@ class LGConnection {
     }
   }
 
+  flyTo(String command) async {
+    try {
+      connectToLG();
+      await _client!.run(command);
+    } catch (e) {
+      print("error in flyto");
+    }
+  }
+
   Future<void> setRefresh() async {
     const search = '<href>##LG_PHPIFACE##kml\\/slave_{{slave}}.kml<\\/href>';
     const replace =
