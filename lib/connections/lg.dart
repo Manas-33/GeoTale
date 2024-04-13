@@ -93,6 +93,7 @@ class LGConnection {
 
       // var a = await _client!.execute('> /var/www/html/kmls.txt');
       // return a;
+      await stopOrbit();
       await _client!.execute("echo '' > /var/www/html/kmls.txt");
     } catch (e) {
       print('Could not connect to host LG');
@@ -102,8 +103,9 @@ class LGConnection {
 
   flyTo(String command) async {
     try {
+      print(command);
       connectToLG();
-      await _client!.run(command);
+      await _client!.execute(command);
     } catch (e) {
       print("error in flyto");
     }
@@ -120,7 +122,7 @@ class LGConnection {
         'echo $_passwordOrKey | sudo -S sed -i "s/$replace/$search/" ~/earth/kml/slave/myplaces.kml';
     try {
       connectToLG();
-      for (var i = 2; i <= int.parse(_numberOfRigs); i++) {
+      for (var i = int.parse(_numberOfRigs); i >= 1; i--) {
         final clearCmd = clear.replaceAll('{{slave}}', i.toString());
         final cmd = command.replaceAll('{{slave}}', i.toString());
         String query = 'sshpass -p $_passwordOrKey ssh -t lg$i \'{{cmd}}\'';
@@ -174,7 +176,8 @@ class LGConnection {
     try {
       connectToLG();
       await _client!.run('echo "" > /tmp/query.txt');
-      await _client?.run("echo '$content' > /var/www/html/Orbit.kml");
+      // await _client!.execute('echo "exittour=true" > /tmp/query.txt');
+      await _client!.run("echo '$content' > /var/www/html/Orbit.kml");
       await _client!.execute(
           "echo '\nhttp://lg1:81/Orbit.kml' >> /var/www/html/kmls.txt");
       return await _client!.execute('echo "playtour=Orbit" > /tmp/query.txt');

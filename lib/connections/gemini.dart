@@ -14,7 +14,7 @@ class Gemini {
     final prompt = """
 return a list of coordinates of some poi's of the given city : $cityName
 exclude any other details. the format should be in json in this format only 
-IMPORTNANT RULE : 	dont add "```json"or "json" or "```" :
+IMPORTNANT RULE : 	dont add "```json"or "json" or "```" : and the poi's should be less than or equal to 5
 
 {
   "description":"A brief 20-25 word description about the city",
@@ -59,7 +59,7 @@ IMPORTNANT RULE : 	dont add "```json"or "json" or "```" :
   Future<String> getStory(String cityName, String descriptions) async {
     final model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
     final prompt = """
-Create an $descriptions description of this given city: $cityName, in 100 words in simple language
+Create an $descriptions description of this given city(story like not too much): $cityName, in 100 words in simple language
 """;
     final content = [Content.text(prompt)];
     final response = await model.generateContent(content,
