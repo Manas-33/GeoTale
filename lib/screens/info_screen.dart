@@ -490,6 +490,7 @@ class CityInformationState extends State<CityInformation> {
                                                     .buildOrbit(placesdata);
                                                 print(content);
                                                 await lg.buildOrbit(content);
+                                                await Future.delayed(Duration(seconds: 1));
                                               }
 
                                               for (int i = 0;

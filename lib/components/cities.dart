@@ -19,11 +19,11 @@ class RecomendCities extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CityCard(
-              cityName: "Mumbai",
-              countryName: "India",
-              imageName: "mumbai.png",
-              cityLat: 19.0760,
-              cityLong: 72.8777,
+              cityName: "London",
+              countryName: "England",
+              imageName: "london.jpg",
+              cityLat: 51.5072,
+              cityLong: 0.1276,
             ),
             SizedBox(
               height: 25.h,
@@ -53,11 +53,11 @@ class RecomendCities extends StatelessWidget {
               height: 25.h,
             ),
             CityCard(
-              cityName: "London",
-              countryName: "England",
-              imageName: "london.jpg",
-              cityLat: 51.5072,
-              cityLong: 0.1276,
+              cityName: "San Francisco",
+              countryName: "America",
+              imageName: "san.jpg",
+              cityLat: 37.75281403597314, 
+              cityLong: -122.44892964987395,
             ),
           ],
         ),
@@ -67,21 +67,21 @@ class RecomendCities extends StatelessWidget {
         Column(
           children: [
             CityCard(
-              cityName: "Delhi",
-              countryName: "India",
-              imageName: "delhi.jpeg",
-              cityLat: 28.7041,
-              cityLong: 77.1025,
-            ),
-            SizedBox(
-              height: 25.h,
-            ),
-            CityCard(
               cityName: "Paris",
               countryName: "France",
               imageName: "paris.jpg",
               cityLat: 48.8566,
               cityLong: 2.3522,
+            ),
+            SizedBox(
+              height: 25.h,
+            ),
+            CityCard(
+              cityName: "Delhi",
+              countryName: "India",
+              imageName: "delhi.jpeg",
+              cityLat: 28.7041,
+              cityLong: 77.1025,
             ),
           ],
         )
