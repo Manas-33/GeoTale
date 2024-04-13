@@ -176,10 +176,10 @@ class LGConnection {
     try {
       connectToLG();
       await _client!.run('echo "" > /tmp/query.txt');
-      // await _client!.execute('echo "exittour=true" > /tmp/query.txt');
       await _client!.run("echo '$content' > /var/www/html/Orbit.kml");
       await _client!.execute(
           "echo '\nhttp://lg1:81/Orbit.kml' >> /var/www/html/kmls.txt");
+
       return await _client!.execute('echo "playtour=Orbit" > /tmp/query.txt');
     } catch (e) {
       print('Error in building orbit');

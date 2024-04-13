@@ -483,16 +483,19 @@ class CityInformationState extends State<CityInformation> {
                                               );
                                             }
                                           : () async {
-                                              String placesdata = Orbit()
-                                                  .generateOrbit(city.places);
-                                              String content = Orbit()
-                                                  .buildOrbit(placesdata);
-                                              print(content);
-                                              await lg.buildOrbit(content);
+                                              for (var i = 0; i < 2; i++) {
+                                                String placesdata = Orbit()
+                                                    .generateOrbit(city.places);
+                                                String content = Orbit()
+                                                    .buildOrbit(placesdata);
+                                                print(content);
+                                                await lg.buildOrbit(content);
+                                              }
+
                                               for (int i = 0;
                                                   i < city.places.length;
                                                   i++) {
-                                                 textToVoice(
+                                                textToVoice(
                                                     city.places[i].description);
                                                 await lg.openBalloon(
                                                     "orbitballoon",
