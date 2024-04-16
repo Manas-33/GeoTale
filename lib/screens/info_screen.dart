@@ -29,6 +29,7 @@ import 'package:http/http.dart' as http;
 
 class CityInformation extends StatefulWidget {
   final String cityName;
+  final String sName;
   final double cityLat;
   final double cityLong;
 
@@ -36,7 +37,7 @@ class CityInformation extends StatefulWidget {
       {super.key,
       required this.cityName,
       required this.cityLat,
-      required this.cityLong});
+      required this.cityLong, required this.sName});
   @override
   State<CityInformation> createState() => CityInformationState();
 }
@@ -59,7 +60,7 @@ class CityInformationState extends State<CityInformation> {
 
   getCityData() async {
     String cityname = widget.cityName;
-    city = await Gemini().getCoordinates(cityname);
+    city = await Gemini().getCoordinates(cityname,widget.sName);
     setState(() {
       isLoading = false;
     });
@@ -298,7 +299,7 @@ class CityInformationState extends State<CityInformation> {
                         Container(
                           width: size.width * 0.30,
                           child: Text(
-                            widget.cityName,
+                            "${widget.cityName}, ${widget.sName}",
                             style: googleTextStyle(
                                 28.sp, FontWeight.w700, Colors.white),
                             // softWrap: true,

@@ -247,14 +247,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             await Future.delayed(Duration(seconds: 1));
                             print("It is a city");
                             print("placeDetails 2nd ${prediction.description}");
-                            String cityName =
-                                prediction.description!.split(',')[0].trim();
+                            List<String> components =
+                                prediction.description!.split(',');
+                            String cityName = components[0].trim();
+                            String secondName = components.length > 1
+                                ? components[1].trim()
+                                : "";
+
+                            print("City Name: $cityName");
+                            print("Country Name: $secondName");
                             print("City Name: $cityName");
                             double cityLat = double.parse(prediction.lat!);
                             double cityLong = double.parse(prediction.lng!);
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => CityInformation(
                                 cityName: cityName,
+                                sName:secondName,
                                 cityLat: cityLat,
                                 cityLong: cityLong,
                               ),

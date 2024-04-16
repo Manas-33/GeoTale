@@ -113,6 +113,7 @@ class CityCard extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => CityInformation(
             cityName: cityName,
+            sName: countryName,
             cityLat: cityLat,
             cityLong: cityLong,
           ),

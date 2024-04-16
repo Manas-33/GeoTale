@@ -9,10 +9,10 @@ import 'package:latlong2/latlong.dart';
 class Gemini {
   final _apiKey = dotenv.env['API_KEY']!;
 
-  Future<City> getCoordinates(String cityName) async {
+  Future<City> getCoordinates(String cityName,String sName  ) async {
     final model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
     final prompt = """
-return a list of coordinates of some poi's of the given city : $cityName
+return a list of coordinates of some poi's of the given city : ${cityName}, ${sName}
 exclude any other details. the format should be in json in this format only 
 IMPORTNANT RULE : 	dont add "```json"or "json" or "```" : and the poi's should be less than or equal to 5
 
