@@ -2,15 +2,14 @@ import 'dart:convert';
 
 import 'package:ai_app/models/city.dart';
 import 'package:ai_app/models/place.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Gemini {
-  final _apiKey = dotenv.env['API_KEY']!;
-
-  Future<City> getCoordinates(String cityName,String sName  ) async {
-    final model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
+  Future<City> getCoordinates(
+      String cityName, String sName, String apiKey) async {
+    final model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
     final prompt = """
 return a list of coordinates of some poi's of the given city : ${cityName}, ${sName}
 exclude any other details. the format should be in json in this format only 
@@ -56,8 +55,8 @@ IMPORTNANT RULE : 	dont add "```json"or "json" or "```" : and the poi's should b
     return City(name: cityName, description: cityDescription, places: places);
   }
 
-  Future<String> getStory(String cityName, String descriptions) async {
-    final model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
+  Future<String> getStory(String cityName, String descriptions, String apiKey) async {
+    final model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
     final prompt = """
 Create an $descriptions description of this given city(story like not too much): $cityName, in 100 words in simple language
 """;

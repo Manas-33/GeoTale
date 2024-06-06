@@ -1,5 +1,6 @@
 import 'package:ai_app/constants.dart';
 import 'package:ai_app/screens/about_screen.dart';
+import 'package:ai_app/screens/api_settings.dart';
 import 'package:ai_app/screens/home_screen.dart';
 import 'package:ai_app/screens/settings.dart';
 import 'package:ai_app/screens/tasks_screen.dart';
@@ -129,6 +130,39 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => SettingsPage(),
+              ));
+            },
+          ),
+          Divider(
+            color: Colors.white.withOpacity(0.5),
+            indent: 50,
+            thickness: 0.5,
+            endIndent: 50,
+          ),
+          ListTile(
+            title: Container(
+              padding: EdgeInsets.only(left: 80),
+              child: Row(
+                children: [
+                  // Image.asset(
+                  //   "assets/images/about.png",
+                  //   // color: Colors.white,
+                  // ),
+                  Icon(Icons.settings, color: Colors.cyan, size: 25),
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Text(
+                    'Set API Keys',
+                    style:
+                        googleTextStyle(20.sp, FontWeight.w500, Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => APIPage(),
               ));
             },
           ),

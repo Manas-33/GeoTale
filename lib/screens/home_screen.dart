@@ -3,16 +3,16 @@ import 'package:ai_app/components/connection_flag.dart';
 import 'package:ai_app/components/drawer.dart';
 import 'package:ai_app/connections/lg.dart';
 import 'package:ai_app/constants.dart';
-import 'package:ai_app/connections/lg.dart' as Lg;
+import 'package:ai_app/screens/api_settings.dart';
 import 'package:ai_app/screens/info_screen.dart';
 import 'package:ai_app/screens/settings.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toasty_box/toast_enums.dart';
 import 'package:toasty_box/toast_service.dart';
 
@@ -27,10 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool connectionStatus = false;
   late LGConnection lg;
-  final apiKey = dotenv.env['MAP_API_KEY'];
+  var apiKey = " ";
   TextEditingController _textEditingController = TextEditingController();
   bool isCity = false;
   Future<void> _connectToLG() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    apiKey = prefs.getString('mapsAPI') ?? " ";
     bool? result = await lg.connectToLG();
     setState(() {
       connectionStatus = result!;
@@ -93,6 +95,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 actions: [
+                  IconButton(
+                    icon: Container(
+                        width: 100,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: secondColor),
+                        child: Center(
+                            child: Text(
+                          "Setup API",
+                          style: googleTextStyle(
+                              15.sp, FontWeight.w500, Colors.white),
+                        ))),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => APIPage(),
+                      ));
+                    },
+                  ),
+                  SizedBox(
+                    width: 20.h,
+                  ),
                   IconButton(
                     icon: Container(
                         width: 50,
@@ -262,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => CityInformation(
                                 cityName: cityName,
-                                sName:secondName,
+                                sName: secondName,
                                 cityLat: cityLat,
                                 cityLong: cityLong,
                               ),

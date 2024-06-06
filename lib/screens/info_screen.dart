@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:ai_app/components/connection_flag.dart';
-import 'package:ai_app/components/drawer.dart';
 import 'package:ai_app/components/info_card.dart';
 import 'package:ai_app/connections/gemini.dart';
 import 'package:ai_app/connections/lg.dart';
@@ -13,15 +12,12 @@ import 'package:ai_app/models/place.dart';
 import 'package:ai_app/screens/tasks_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:group_button/group_button.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tap_builder/tap_builder.dart';
 import 'package:toasty_box/toast_enums.dart';
 import 'package:toasty_box/toasty_box.dart';
@@ -37,7 +33,8 @@ class CityInformation extends StatefulWidget {
       {super.key,
       required this.cityName,
       required this.cityLat,
-      required this.cityLong, required this.sName});
+      required this.cityLong,
+      required this.sName});
   @override
   State<CityInformation> createState() => CityInformationState();
 }
@@ -60,7 +57,9 @@ class CityInformationState extends State<CityInformation> {
 
   getCityData() async {
     String cityname = widget.cityName;
-    city = await Gemini().getCoordinates(cityname,widget.sName);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final api = prefs.getString('gemniAPI');
+    city = await Gemini().getCoordinates(cityname, widget.sName, api ?? "");
     setState(() {
       isLoading = false;
     });
@@ -91,7 +90,6 @@ class CityInformationState extends State<CityInformation> {
   @override
   Widget build(BuildContext context) {
     final _scaffoldKey = GlobalKey<ScaffoldState>();
-
     List<String> buttonsValue = [
       "Geographic",
       "Exciting",
@@ -113,7 +111,8 @@ class CityInformationState extends State<CityInformation> {
     textToVoice(String content) async {
       final url =
           Uri.parse("https://api.deepgram.com/v1/speak?model=aura-zeus-en");
-      String voiceApiKey = dotenv.env['DEEPGRAM_API_KEY']!;
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String voiceApiKey = prefs.getString('deepgramAPI')!;
       final response = await http.post(url,
           headers: {
             "Content-Type": "application/json",
@@ -321,6 +320,7 @@ class CityInformationState extends State<CityInformation> {
                             onTap: () {
                               setState(() {
                                 isDesc = true;
+                                descriptionsChosen.clear();
                               });
                               print(isDesc);
                             },
@@ -345,6 +345,7 @@ class CityInformationState extends State<CityInformation> {
                         GestureDetector(
                             onTap: isLoading
                                 ? () {
+                                    descriptionsChosen.clear();
                                     ToastService.showErrorToast(
                                       context,
                                       isClosable: true,
@@ -356,6 +357,7 @@ class CityInformationState extends State<CityInformation> {
                                 : () {
                                     setState(() {
                                       isDesc = false;
+                                      descriptionsChosen.clear();
                                     });
                                     print(isDesc);
                                   },
@@ -403,6 +405,7 @@ class CityInformationState extends State<CityInformation> {
                                 width: size.width * 0.35,
                                 child: GroupButton(
                                     onSelected: (value, index, isSelected) {
+                                      
                                       if (descriptionsChosen.length < 3) {
                                         if (descriptionsChosen
                                             .contains(buttonsValue[index])) {
@@ -426,6 +429,7 @@ class CityInformationState extends State<CityInformation> {
                                               "Maximum Three can be selected!",
                                         );
                                       }
+                                      print(getString(descriptionsChosen));
                                     },
                                     maxSelected: 3,
                                     options: GroupButtonOptions(
@@ -491,7 +495,8 @@ class CityInformationState extends State<CityInformation> {
                                                     .buildOrbit(placesdata);
                                                 print(content);
                                                 await lg.buildOrbit(content);
-                                                await Future.delayed(Duration(seconds: 1));
+                                                await Future.delayed(
+                                                    Duration(seconds: 1));
                                               }
 
                                               for (int i = 0;
@@ -649,9 +654,15 @@ class CityInformationState extends State<CityInformation> {
                                     height: 120,
                                     child: AnimatedTapBuilder(
                                       onTap: () async {
+                                        final SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        final api = prefs.getString('gemniAPI');
+                                        print(getString(descriptionsChosen));
                                         story = await Gemini().getStory(
                                             widget.cityName,
-                                            getString(descriptionsChosen));
+                                            getString(descriptionsChosen),
+                                            api ?? "");
                                         print(story);
                                         await textToVoice(story);
                                       },
